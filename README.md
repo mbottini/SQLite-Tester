@@ -7,7 +7,7 @@ Git, obviously.
 Make  
 Java JDK  
 jdbc .jar, gotten from
-[here](https://github.com/xerial/sqlite-jdbc/releases).
+[here](https://bitbucket.org/xerial/sqlite-jdbc/downloads).
 
 #Linux 
 
