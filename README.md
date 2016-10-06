@@ -28,7 +28,10 @@ Feel free to install gcc and whatever, but we're concerned with the basic utilit
 We are installing this because we need `make`. If using MinGW, add C:\MinGW\bin to your PATH environment variable and `make`
 with `mingw32-make`.
 
-* Set your Remote Execution 
+* Set your 
+[Script Execution
+Policy](https://technet.microsoft.com/en-us/library/ee176961.aspx) to
+RemoteSigned.
 
 #Usage:
 
