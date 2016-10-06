@@ -4,7 +4,7 @@ Testing repo for playing around with SQLite in Java.
 # Dependencies:
 
 Git, obviously.  
-Make  
+Make, if you want an easier time. 
 Java JDK  
 jdbc .jar, gotten from
 [here](https://bitbucket.org/xerial/sqlite-jdbc/downloads).
@@ -22,12 +22,8 @@ If you're on Gentoo, compile OpenJDK from source or something, you glorious madm
 [here](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html),
 if you haven't already. Add C:\Program Files\Java\jdk1.8.0_101\bin\ to your PATH environment variable.
 
-* Install either Cygwin or MinGW. Cygwin is what you want if you like Linux-y things. MinGW is less Linux-oriented
-and mostly focuses on providing some of the Linux-y services in Windows. MinGW can be installed 
-[here](http://www.mingw.org/wiki/getting_started). Cygwin can be installed [here](https://cygwin.com/install.html). 
-Feel free to install gcc and whatever, but we're concerned with the basic utilities.
-We are installing this because we need `make`. If using MinGW, add C:\MinGW\bin to your PATH environment variable and `make`
-with `mingw32-make`.
+* Install Cygwin or MinGW if you want to use `make`. Otherwise, compile with
+  `javac *.java` for now.
 
 * Set your 
 [Script Execution
@@ -44,9 +40,9 @@ Clone into some folder with the following:
     
 Stick the jdbc jar inside this directory.
     
-If you're running Linux, `make` with, um, `make linux`. Run with `sh run.sh`.
+If you're running Linux, `make` with, um, `make`. Run with `sh run.sh`.
 
-If you're running Windows, `make` with `mingw32-make windows` if you're using
-MinGW or `make linux` if you're using Cygwin. 
+If you're running Windows, `make` with `mingw32-make`.
+
 Run with `.\run.ps1` if you're using MinGW and `sh run.sh` if you're using
 Cygwin.
