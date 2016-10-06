@@ -6,7 +6,8 @@ Testing repo for playing around with SQLite in Java.
 Git, obviously.  
 Make  
 Java JDK  
-jdbc .jar, gotten from https://bitbucket.org/xerial/sqlite-jdbc/downloads
+jdbc .jar, gotten from
+[here](https://github.com/xerial/sqlite-jdbc/releases).
 
 #Linux 
 
