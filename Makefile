@@ -1,14 +1,12 @@
-ifeq ($(OS), Windows_NT)
-all: windows
+ifdef SYSTEMROOT
+    CREATE_RUN_SCRIPT="echo java -classpath ".;sqlite-jdbc-3.14.2.1.jar"\
+    SQLiteJDBC > run.ps1"
+else
+    CREATE_RUN_SCRIPT=echo "java -classpath \".:sqlite-jdbc-3.14.2.1.jar\"\
+    SQLiteJDBC > run.sh"
 endif
 	
 all:
-	echo "java -classpath \".:sqlite-jdbc-3.14.2.1.jar\" SQLiteJDBC" > run.sh
+	$(CREATE_RUN_SCRIPT)
 	javac *.java
 
-windows:
-	echo "java -classpath \".;sqlite-jdbc-3.14.2.1.jar\" SQLiteJDBC" > run.ps1
-	javac *.java
-
-clean:
-	rm *.class
