@@ -4,7 +4,7 @@ Testing repo for playing around with SQLite in Java.
 # Dependencies:
 
 Git, obviously.  
-Make, if you want an easier time. 
+Make, if you want an easier time.   
 Java JDK  
 jdbc .jar, gotten from
 [here](https://bitbucket.org/xerial/sqlite-jdbc/downloads).
