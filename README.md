@@ -44,7 +44,9 @@ Clone into some folder with the following:
     
 Stick the jdbc jar inside this directory.
     
-If you're running Linux, `make` with, um, `make`. Run with `sh run.sh`.
+If you're running Linux, `make` with, um, `make linux`. Run with `sh run.sh`.
 
-If you're running Windows, `make` with `mingw32-make` if you're using MinGW or `make` if you're using Cygwin. 
-Run with `.\run.ps1`.
+If you're running Windows, `make` with `mingw32-make windows` if you're using
+MinGW or `make linux` if you're using Cygwin. 
+Run with `.\run.ps1` if you're using MinGW and `sh run.sh` if you're using
+Cygwin.
