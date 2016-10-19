@@ -19,6 +19,9 @@ public class Database {
         createProviderTable();
     }
 
+    //            Database Creation Functions
+    //---------------------------------------------------
+
     // Creates Patients table if it doesn't exist already.
     public void createPatientTable() throws SQLException {
         String commandString =
@@ -26,11 +29,11 @@ public class Database {
             "Patients " + 
             "(" +
             "PATIENT_ID int NOT NULL, " +
-            "NAME varchar(25) NOT NULL, " +
-            "ADDRESS varchar(25) NOT NULL, " +
-            "CITY varchar(14) NOT NULL, " +
-            "STATE varchar(2) NOT NULL, " +
-            "ZIPCODE varchar(5) NOT NULL, " +
+            "NAME char(25) NOT NULL, " +
+            "ADDRESS char(25) NOT NULL, " +
+            "CITY char(14) NOT NULL, " +
+            "STATE char(2) NOT NULL, " +
+            "ZIPCODE char(5) NOT NULL, " +
             "PRIMARY KEY (PATIENT_ID)" +
             ")";
 
@@ -64,12 +67,12 @@ public class Database {
             "Transactions " + 
             "(" +
             "TRANSACTION_ID int NOT NULL, " +
-            "DATE_TIME varchar(18) NOT NULL, " +
-            "SERVICE_TIME varchar(10) NOT NULL, " +
+            "DATE_TIME char(18) NOT NULL, " +
+            "SERVICE_TIME char(10) NOT NULL, " +
             "PROVIDER_ID int NOT NULL, " +
             "PATIENT_ID int NOT NULL, " +
             "SERVICE_ID int NOT NULL, " +
-            "COMMENT varchar(100), " +
+            "COMMENT char(100), " +
             "PRIMARY KEY (TRANSACTION_ID)" +
             ")";
 
@@ -103,9 +106,9 @@ public class Database {
             "Services " + 
             "(" +
             "SERVICE_ID int NOT NULL, " +
-            "SERVICE_NAME varchar(20) NOT NULL, " +
+            "SERVICE_NAME char(20) NOT NULL, " +
             "SERVICE_PRICE float NOT NULL, " +
-            "SERVICE_CATEGORY varchar(20), " +
+            "SERVICE_CATEGORY char(20), " +
             "PRIMARY KEY (SERVICE_ID)" +
             ")";
 
@@ -139,8 +142,8 @@ public class Database {
             "Providers " + 
             "(" +
             "PROVIDER_ID int NOT NULL, " +
-            "PROVIDER_NAME varchar(20) NOT NULL, " +
-            "PROVIDER_CATEGORIES varchar(100), " +
+            "PROVIDER_NAME char(20) NOT NULL, " +
+            "PROVIDER_CATEGORIES char(100), " +
             "PRIMARY KEY (PROVIDER_ID)" +
             ")";
 
@@ -161,6 +164,75 @@ public class Database {
                     + ": " + e.getMessage());
             }
         }
+        finally {
+            if(stmt != null) {
+                stmt.close();
+            }
+        }
+    }
+
+    public Boolean addPatient(int ID, String name, String address, String city, 
+                    String state, String zipcode) throws SQLException {
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:database.db");
+        }
+        catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            return false;
+        }
+
+        PreparedStatement pStatement = null;
+
+        try {
+            pStatement = conn.prepareStatement (
+                "INSERT INTO Patients " +
+                "VALUES (?, ?, ?, ?, ?, ?)"
+            );
+
+            pStatement.setInt(1, ID);
+            pStatement.setString(2, name);
+            pStatement.setString(3, address);
+            pStatement.setString(4, city);
+            pStatement.setString(5, state);
+            pStatement.setString(6, zipcode);
+            pStatement.executeUpdate();
+        } catch(SQLException e) {
+             System.err.println(e.getClass().getName() 
+                                + ": " + e.getMessage());
+             return false;
+        }
+
+        finally {
+            if(pStatement != null) {
+                pStatement.close();
+            }
+        }
+
+        return true;
+    }
+
+    public void printPatients() throws SQLException{
+        Statement stmt = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:database.db");
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery (
+                    "SELECT PATIENT_ID, NAME, ADDRESS, CITY, " + 
+                    "STATE, ZIPCODE FROM Patients");
+            while(rs.next()) {
+                System.out.println(rs.getInt("PATIENT_ID"));
+                System.out.println(rs.getString("ADDRESS"));
+            }
+
+            rs.close();
+
+        }
+        catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+
         finally {
             if(stmt != null) {
                 stmt.close();
