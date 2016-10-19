@@ -29,9 +29,9 @@ public class Database {
             "Patients " + 
             "(" +
             "PATIENT_ID int NOT NULL, " +
-            "NAME char(25) NOT NULL, " +
-            "ADDRESS char(25) NOT NULL, " +
-            "CITY char(14) NOT NULL, " +
+            "NAME varchar(25) NOT NULL, " +
+            "ADDRESS varchar(25) NOT NULL, " +
+            "CITY varchar(14) NOT NULL, " +
             "STATE char(2) NOT NULL, " +
             "ZIPCODE char(5) NOT NULL, " +
             "PRIMARY KEY (PATIENT_ID)" +
@@ -72,7 +72,7 @@ public class Database {
             "PROVIDER_ID int NOT NULL, " +
             "PATIENT_ID int NOT NULL, " +
             "SERVICE_ID int NOT NULL, " +
-            "COMMENT char(100), " +
+            "COMMENT varchar(100), " +
             "PRIMARY KEY (TRANSACTION_ID)" +
             ")";
 
@@ -106,9 +106,8 @@ public class Database {
             "Services " + 
             "(" +
             "SERVICE_ID int NOT NULL, " +
-            "SERVICE_NAME char(20) NOT NULL, " +
+            "SERVICE_NAME varchar(20) NOT NULL, " +
             "SERVICE_PRICE float NOT NULL, " +
-            "SERVICE_CATEGORY char(20), " +
             "PRIMARY KEY (SERVICE_ID)" +
             ")";
 
@@ -142,8 +141,7 @@ public class Database {
             "Providers " + 
             "(" +
             "PROVIDER_ID int NOT NULL, " +
-            "PROVIDER_NAME char(20) NOT NULL, " +
-            "PROVIDER_CATEGORIES char(100), " +
+            "PROVIDER_NAME varchar(20) NOT NULL, " +
             "PRIMARY KEY (PROVIDER_ID)" +
             ")";
 
@@ -212,7 +210,7 @@ public class Database {
         return true;
     }
 
-    public void printPatients() throws SQLException{
+    public void printPatients() throws SQLException {
         Statement stmt = null;
         try {
             Class.forName("org.sqlite.JDBC");
