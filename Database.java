@@ -210,18 +210,87 @@ public class Database {
         return true;
     }
 
-    public void printPatients() throws SQLException {
+    public Boolean addPatient(Patient newPatient) throws SQLException {
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:database.db");
+        }
+        catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            return false;
+        }
+
+        PreparedStatement pStatement = null;
+
+        try {
+            // See if the patient already exists.
+
+            pStatement = conn.prepareStatement(
+                "SELECT * FROM Patients WHERE PATIENT_ID = ?"
+            );
+
+            pStatement.setInt(1, newPatient.ID());
+
+            ResultSet rs = null;
+            rs = pStatement.executeQuery();
+
+            if(rs.next()) {
+                throw new AlreadyExistsException();
+            }
+
+            // Otherwise, we're good!
+
+            pStatement = conn.prepareStatement (
+                "INSERT INTO Patients " +
+                "VALUES (?, ?, ?, ?, ?, ?)"
+            );
+
+            pStatement.setInt(1, newPatient.ID());
+            pStatement.setString(2, newPatient.name());
+            pStatement.setString(3, newPatient.address());
+            pStatement.setString(4, newPatient.city());
+            pStatement.setString(5, newPatient.state());
+            pStatement.setString(6, newPatient.zipcode());
+            pStatement.executeUpdate();
+
+        } catch(SQLException e) {
+             System.err.println(e.getClass().getName() 
+                                + ": " + e.getMessage());
+             return false;
+        }
+
+        catch(AlreadyExistsException e) {
+            System.out.println("Patient ID already exists.");
+            return false;
+        }
+
+        finally {
+            if(pStatement != null) {
+                pStatement.close();
+            }
+        }
+
+        return true;
+    }
+
+
+    public void printAllPatients() throws SQLException {
         Statement stmt = null;
+        Patient currentPatient;
         try {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:database.db");
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery (
-                    "SELECT PATIENT_ID, NAME, ADDRESS, CITY, " + 
-                    "STATE, ZIPCODE FROM Patients");
+                    "SELECT * FROM Patients");
             while(rs.next()) {
-                System.out.println(rs.getInt("PATIENT_ID"));
-                System.out.println(rs.getString("ADDRESS"));
+                currentPatient = new Patient(rs.getInt("PATIENT_ID"),
+                                             rs.getString("NAME"),
+                                             rs.getString("ADDRESS"),
+                                             rs.getString("CITY"),
+                                             rs.getString("STATE"),
+                                             rs.getString("ZIPCODE"));
+                System.out.println(currentPatient + "\n");
             }
 
             rs.close();
@@ -237,4 +306,9 @@ public class Database {
             }
         }
     }
+
+    
+
+
+
 }

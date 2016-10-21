@@ -43,4 +43,43 @@ public class Patient {
     Boolean isBlankOrTooManyChars(String s, int limit) {
         return s.length() == 0 || s.length() > limit;
     }
+
+
+    // Getter functions.
+
+    public int ID() {
+        return _ID;
+    }
+
+    public String name() {
+        return _name;
+    }
+
+    public String address() {
+        return _address;
+    }
+
+    public String city() {
+        return _city;
+    }
+
+    public String state() {
+        return _state;
+    }
+
+    public String zipcode() {
+        return _zipcode;
+    }
+
+    // Printing a Patient value.
+
+    @Override
+    public String toString() {
+        return "ID: " + Integer.toString(_ID) + "\n" +
+               "Name: " + _name + "\n" +
+               "Address: " + _address + "\n" +
+               "City: " + _city + "\n" +
+               "State: " + _state + "\n" +
+               "Zipcode: " + _zipcode;
+    }
 }
