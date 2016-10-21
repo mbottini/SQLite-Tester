@@ -7,6 +7,7 @@ public class mainApp
             Database dBase = new Database();
             dBase.addPatients("patients.csv");
 
+            System.out.println("\nPrinting patients...\n");
             dBase.printAllPatients();
         }
         catch(SQLException e) {

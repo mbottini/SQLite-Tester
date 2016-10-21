@@ -1,34 +1,54 @@
+import java.util.HashSet;
+import java.util.Arrays;
+
+
 public class Patient {
     int _ID;
     String _name, _address, _city, _state, _zipcode;
+    static HashSet<String> stateSet = new HashSet<String>(Arrays.asList("AK", "AL",
+                "AR", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "HI",
+                "IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME",
+                "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NH", "NJ",
+                "NM", "NV", "NY", "OH", "OK", "OR", "PA", "RI", "SC", "SD",
+                "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV", "WY"));
+
 
     public Patient(int ID, String name, String address, String city,
                    String state, String zipcode) throws InputException {
+        String inputExceptionString = "";
+
         if(ID < 0 || ID > 1000000000) {
-            throw new InputException("ID must be a positive 9-digit number.");
+            inputExceptionString += "ID must be a positive 9-digit number.\n";
         }
 
         if(isBlankOrTooManyChars(name, 25)) {
-            throw new InputException("Name must not be blank and must " +
-                    "contain fewer than 25 characters.");
+            inputExceptionString += "Name must not be blank and must " +
+                    "contain fewer than 25 characters.\n";
         }
 
         if(isBlankOrTooManyChars(address, 25)) {
-            throw new InputException("Address must not be blank and must " +
-                    "contain fewer than 25 characters.");
+            inputExceptionString += "Address must not be blank and must " +
+                    "contain fewer than 25 characters.\n";
         }
 
         if(isBlankOrTooManyChars(city, 14)) {
-            throw new InputException("Address must not be blank and must " +
-                    "contain fewer than 25 characters.");
+            inputExceptionString += "City must not be blank and must " +
+                    "contain fewer than 14 characters.\n";
         }
 
-        if(!(state.matches("^[a-zA-Z]{2}$"))) {
-            throw new InputException("State must be two characters.");
+        if(!(stateSet.contains(state))) {
+            inputExceptionString += "Invalid state input.\n";
         }
 
         if(!(zipcode.matches("^\\d{5}$"))) {
-            throw new InputException("Zipcode must be five numbers.");
+            inputExceptionString += "Zipcode must be five numbers.\n";
+        }
+
+        if(inputExceptionString != "") {
+            // Remove last '\n' from inputExceptionString.
+            inputExceptionString = inputExceptionString.substring(0,
+                                            inputExceptionString.length() - 1);
+            throw new InputException(inputExceptionString);
         }
 
         _ID = ID;
