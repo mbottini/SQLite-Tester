@@ -284,6 +284,7 @@ public class Database {
     public void addPatients(String filename) {
         String line;
         Patient currentPatient;
+        int lineNumber = 1;
 
         // Fatal exception try.
         try {
@@ -319,6 +320,17 @@ public class Database {
                     System.out.println("Error for " + splitLine[1] + ": " +
                                        e.getMessage());
                 }
+                catch(ArrayIndexOutOfBoundsException e) {
+                    System.out.println("Invalid input on line " +
+                            Integer.toString(lineNumber));
+                }
+                catch(NumberFormatException e) {
+                    System.out.println("Invalid input on line " +
+                            Integer.toString(lineNumber));
+                }
+                
+
+                lineNumber++;
             }
             
         }
