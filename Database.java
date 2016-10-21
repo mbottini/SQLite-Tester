@@ -1,4 +1,7 @@
 import java.sql.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Database {
     Connection conn = null;
@@ -169,6 +172,11 @@ public class Database {
         }
     }
 
+    // addPatient functions, from naked strings, Patient object, and CSV.
+
+    // Naked string is DEPRECATED, please don't use. It's just here for
+    // posterity and testing.
+
     public Boolean addPatient(int ID, String name, String address, String city, 
                     String state, String zipcode) throws SQLException {
         try {
@@ -273,6 +281,58 @@ public class Database {
         return true;
     }
 
+    public void addPatients(String filename) {
+        String line;
+        Patient currentPatient;
+
+        // Fatal exception try.
+        try {
+            BufferedReader reader = new BufferedReader(
+                                        new FileReader(filename)
+                                    );
+
+            while((line = reader.readLine()) != null) {
+                String [] splitLine = line.split(",");
+                // Individual line exception try.
+                try {
+                    currentPatient = new Patient(
+                                            Integer.parseInt(splitLine[0]), //ID
+                                            splitLine[1], // Name
+                                            splitLine[2], // Address
+                                            splitLine[3], // City
+                                            splitLine[4], // State
+                                            splitLine[5]  // Zipcode
+                                          );
+                    if(addPatient(currentPatient)) {
+                        System.out.println("Added " + currentPatient.name() +
+                                           " to database.");
+                    }
+
+                    else {
+                        System.out.println("Tried to add " +
+                            currentPatient.name() + ": " + 
+                            Integer.toString(currentPatient.ID()) +
+                            ". ID already exists.");
+                    }
+                }
+                catch(InputException e) {
+                    System.out.println("Error for " + splitLine[1] + ": " +
+                                       e.getMessage());
+                }
+            }
+            
+        }
+        catch(SQLException e) {
+            System.err.println(e.getClass() + ": " + e.getMessage());
+            return;
+        }
+        catch(IOException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        return;
+    }
 
     public void printAllPatients() throws SQLException {
         Statement stmt = null;
