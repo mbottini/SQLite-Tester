@@ -37,6 +37,8 @@ public class Database {
             "CITY varchar(14) NOT NULL, " +
             "STATE char(2) NOT NULL, " +
             "ZIPCODE char(5) NOT NULL, " +
+            "STANDING int NOT NULL, " +
+            "ACTIVE int NOT NULL, " +
             "PRIMARY KEY (PATIENT_ID)" +
             ")";
 
@@ -70,11 +72,12 @@ public class Database {
             "Transactions " + 
             "(" +
             "TRANSACTION_ID int NOT NULL, " +
-            "DATE_TIME char(18) NOT NULL, " +
-            "SERVICE_TIME char(10) NOT NULL, " +
+            "DATE_TIME char(19) NOT NULL, " +
+            "SERVICE_DATE char(10) NOT NULL, " +
             "PROVIDER_ID int NOT NULL, " +
             "PATIENT_ID int NOT NULL, " +
             "SERVICE_ID int NOT NULL, " +
+            "CONSULT_ID int NOT NULL, " +
             "COMMENT varchar(100), " +
             "PRIMARY KEY (TRANSACTION_ID)" +
             ")";
@@ -111,6 +114,7 @@ public class Database {
             "SERVICE_ID int NOT NULL, " +
             "SERVICE_NAME varchar(20) NOT NULL, " +
             "SERVICE_PRICE float NOT NULL, " +
+            "ACTIVE int NOT NULL, " +
             "PRIMARY KEY (SERVICE_ID)" +
             ")";
 
@@ -145,6 +149,7 @@ public class Database {
             "(" +
             "PROVIDER_ID int NOT NULL, " +
             "PROVIDER_NAME varchar(20) NOT NULL, " +
+            "ACTIVE int NOT NULL, " +
             "PRIMARY KEY (PROVIDER_ID)" +
             ")";
 
@@ -193,7 +198,7 @@ public class Database {
         try {
             pStatement = conn.prepareStatement (
                 "INSERT INTO Patients " +
-                "VALUES (?, ?, ?, ?, ?, ?)"
+                "VALUES (?, ?, ?, ?, ?, ?, 1, 1)"
             );
 
             pStatement.setInt(1, ID);
@@ -250,7 +255,7 @@ public class Database {
 
             pStatement = conn.prepareStatement (
                 "INSERT INTO Patients " +
-                "VALUES (?, ?, ?, ?, ?, ?)"
+                "VALUES (?, ?, ?, ?, ?, ?, 1, 1)"
             );
 
             pStatement.setInt(1, newPatient.ID());
