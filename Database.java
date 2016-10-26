@@ -6,6 +6,11 @@ import java.io.IOException;
 public class Database {
     Connection conn = null;
 
+    int patientNum;
+    int transactionNum;
+    int serviceNum;
+    int providerNum;
+
     public Database() throws SQLException {
         try {
             Class.forName("org.sqlite.JDBC");
@@ -20,6 +25,12 @@ public class Database {
         createTransactionTable();
         createServiceTable();
         createProviderTable();
+
+        // Get the number of rows from each table.
+        patientNum = getNumberOfRows("Patients");
+        transactionNum = getNumberOfRows("Transactions");
+        serviceNum = getNumberOfRows("Services");
+        providerNum = getNumberOfRows("Providers");
     }
 
     //            Database Creation Functions
@@ -37,8 +48,6 @@ public class Database {
             "CITY varchar(14) NOT NULL, " +
             "STATE char(2) NOT NULL, " +
             "ZIPCODE char(5) NOT NULL, " +
-            "STANDING int NOT NULL, " +
-            "ACTIVE int NOT NULL, " +
             "PRIMARY KEY (PATIENT_ID)" +
             ")";
 
@@ -72,12 +81,11 @@ public class Database {
             "Transactions " + 
             "(" +
             "TRANSACTION_ID int NOT NULL, " +
-            "DATE_TIME char(19) NOT NULL, " +
-            "SERVICE_DATE char(10) NOT NULL, " +
+            "DATE_TIME char(18) NOT NULL, " +
+            "SERVICE_TIME char(10) NOT NULL, " +
             "PROVIDER_ID int NOT NULL, " +
             "PATIENT_ID int NOT NULL, " +
             "SERVICE_ID int NOT NULL, " +
-            "CONSULT_ID int NOT NULL, " +
             "COMMENT varchar(100), " +
             "PRIMARY KEY (TRANSACTION_ID)" +
             ")";
@@ -114,7 +122,6 @@ public class Database {
             "SERVICE_ID int NOT NULL, " +
             "SERVICE_NAME varchar(20) NOT NULL, " +
             "SERVICE_PRICE float NOT NULL, " +
-            "ACTIVE int NOT NULL, " +
             "PRIMARY KEY (SERVICE_ID)" +
             ")";
 
@@ -149,7 +156,6 @@ public class Database {
             "(" +
             "PROVIDER_ID int NOT NULL, " +
             "PROVIDER_NAME varchar(20) NOT NULL, " +
-            "ACTIVE int NOT NULL, " +
             "PRIMARY KEY (PROVIDER_ID)" +
             ")";
 
@@ -177,6 +183,31 @@ public class Database {
         }
     }
 
+    private int getNumberOfRows(String tableName) throws SQLException {
+        int numberOfRows = -1;
+        Statement stmt = null;
+
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS total FROM " 
+                                             + tableName);
+            numberOfRows = rs.getInt("total");
+        }
+
+        catch (SQLException e) {
+                System.err.println(e.getClass().getName() 
+                    + ": " + e.getMessage());
+        }
+
+        finally {
+            if(stmt != null) {
+                stmt.close();
+            }
+        }
+
+        return numberOfRows;
+    }
+
     // addPatient functions, from naked strings, Patient object, and CSV.
 
     // Naked string is DEPRECATED, please don't use. It's just here for
@@ -198,7 +229,7 @@ public class Database {
         try {
             pStatement = conn.prepareStatement (
                 "INSERT INTO Patients " +
-                "VALUES (?, ?, ?, ?, ?, ?, 1, 1)"
+                "VALUES (?, ?, ?, ?, ?, ?)"
             );
 
             pStatement.setInt(1, ID);
@@ -239,32 +270,41 @@ public class Database {
             // See if the patient already exists.
 
             pStatement = conn.prepareStatement(
-                "SELECT * FROM Patients WHERE PATIENT_ID = ?"
+                "SELECT * FROM Patients WHERE NAME = ?"
             );
 
-            pStatement.setInt(1, newPatient.ID());
+            pStatement.setString(1, newPatient.name());
 
             ResultSet rs = null;
             rs = pStatement.executeQuery();
+            Patient currentPatient = null;
 
-            if(rs.next()) {
-                throw new AlreadyExistsException();
+            while(rs.next()) {
+                currentPatient = new Patient(rs.getString("NAME"),
+                        rs.getString("ADDRESS"), rs.getString("CITY"),
+                        rs.getString("STATE"),
+                        rs.getString("ZIPCODE"));
+
+                if(currentPatient.equals(newPatient)) {
+                    throw new AlreadyExistsException();
+                }
             }
 
             // Otherwise, we're good!
 
             pStatement = conn.prepareStatement (
                 "INSERT INTO Patients " +
-                "VALUES (?, ?, ?, ?, ?, ?, 1, 1)"
+                "VALUES (?, ?, ?, ?, ?, ?)"
             );
 
-            pStatement.setInt(1, newPatient.ID());
+            pStatement.setInt(1, patientNum);
             pStatement.setString(2, newPatient.name());
             pStatement.setString(3, newPatient.address());
             pStatement.setString(4, newPatient.city());
             pStatement.setString(5, newPatient.state());
             pStatement.setString(6, newPatient.zipcode());
             pStatement.executeUpdate();
+            patientNum++;
 
         } catch(SQLException e) {
              System.err.println(e.getClass().getName() 
@@ -273,8 +313,13 @@ public class Database {
         }
 
         catch(AlreadyExistsException e) {
-            System.out.println("Patient ID already exists.");
+            System.out.println("Patient already exists.");
             return false;
+        }
+
+        catch(InputException e) {
+            System.out.println("Somehow, an invalid patient is in the " +
+                    "database.");
         }
 
         finally {
@@ -302,12 +347,11 @@ public class Database {
                 // Individual line exception try.
                 try {
                     currentPatient = new Patient(
-                                            Integer.parseInt(splitLine[0]), //ID
-                                            splitLine[1], // Name
-                                            splitLine[2], // Address
-                                            splitLine[3], // City
-                                            splitLine[4], // State
-                                            splitLine[5]  // Zipcode
+                                            splitLine[0], // Name
+                                            splitLine[1], // Address
+                                            splitLine[2], // City
+                                            splitLine[3], // State
+                                            splitLine[4]  // Zipcode
                                           );
                     if(addPatient(currentPatient)) {
                         System.out.println("Added " + currentPatient.name() +
@@ -316,9 +360,8 @@ public class Database {
 
                     else {
                         System.out.println("Tried to add " +
-                            currentPatient.name() + ": " + 
-                            Integer.toString(currentPatient.ID()) +
-                            ". ID already exists.");
+                            currentPatient.name() + 
+                            ", but patient already exists.");
                     }
                 }
                 catch(InputException e) {
@@ -326,11 +369,11 @@ public class Database {
                                        e.getMessage());
                 }
                 catch(ArrayIndexOutOfBoundsException e) {
-                    System.out.println("Invalid input on line " +
+                    System.out.println("ArrayIndexOutOfBounds exception on line " +
                             Integer.toString(lineNumber));
                 }
                 catch(NumberFormatException e) {
-                    System.out.println("Invalid input on line " +
+                    System.out.println("NumberFormatException on line " +
                             Integer.toString(lineNumber));
                 }
                 
