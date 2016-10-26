@@ -208,60 +208,16 @@ public class Database {
         return numberOfRows;
     }
 
-    // addPatient functions, from naked strings, Patient object, and CSV.
+    // addPatient functions from Patient object and CSV.
 
-    // Naked string is DEPRECATED, please don't use. It's just here for
-    // posterity and testing.
-
-    public Boolean addPatient(int ID, String name, String address, String city, 
-                    String state, String zipcode) throws SQLException {
+    public int addPatient(Patient newPatient) throws SQLException {
         try {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:database.db");
         }
         catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            return false;
-        }
-
-        PreparedStatement pStatement = null;
-
-        try {
-            pStatement = conn.prepareStatement (
-                "INSERT INTO Patients " +
-                "VALUES (?, ?, ?, ?, ?, ?)"
-            );
-
-            pStatement.setInt(1, ID);
-            pStatement.setString(2, name);
-            pStatement.setString(3, address);
-            pStatement.setString(4, city);
-            pStatement.setString(5, state);
-            pStatement.setString(6, zipcode);
-            pStatement.executeUpdate();
-        } catch(SQLException e) {
-             System.err.println(e.getClass().getName() 
-                                + ": " + e.getMessage());
-             return false;
-        }
-
-        finally {
-            if(pStatement != null) {
-                pStatement.close();
-            }
-        }
-
-        return true;
-    }
-
-    public Boolean addPatient(Patient newPatient) throws SQLException {
-        try {
-            Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection("jdbc:sqlite:database.db");
-        }
-        catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            return false;
+            return -1;
         }
 
         PreparedStatement pStatement = null;
@@ -309,17 +265,18 @@ public class Database {
         } catch(SQLException e) {
              System.err.println(e.getClass().getName() 
                                 + ": " + e.getMessage());
-             return false;
+             return -1;
         }
 
         catch(AlreadyExistsException e) {
             System.out.println("Patient already exists.");
-            return false;
+            return -1;
         }
 
         catch(InputException e) {
             System.out.println("Somehow, an invalid patient is in the " +
                     "database.");
+            return -1;
         }
 
         finally {
@@ -328,12 +285,13 @@ public class Database {
             }
         }
 
-        return true;
+        return patientNum - 1;
     }
 
     public void addPatients(String filename) {
         String line;
         Patient currentPatient;
+        int currentPatientID;
         int lineNumber = 1;
 
         // Fatal exception try.
@@ -353,9 +311,12 @@ public class Database {
                                             splitLine[3], // State
                                             splitLine[4]  // Zipcode
                                           );
-                    if(addPatient(currentPatient)) {
+                    currentPatientID = addPatient(currentPatient);
+
+                    if(currentPatientID != -1) {
                         System.out.println("Added " + currentPatient.name() +
-                                           " to database.");
+                                           " to database. ID = " +
+                                           currentPatientID);
                     }
 
                     else {
@@ -365,7 +326,7 @@ public class Database {
                     }
                 }
                 catch(InputException e) {
-                    System.out.println("Error for " + splitLine[1] + ": " +
+                    System.out.println("Error for " + splitLine[0] + ": " +
                                        e.getMessage());
                 }
                 catch(ArrayIndexOutOfBoundsException e) {
