@@ -2,33 +2,43 @@ public abstract class Entity {
     int _ID;
     String _name, _address, _city, _state, _zipcode;
 
+    Boolean _active;
+
     public Entity(int ID, String name, String address, String city,
-                   String state, String zipcode) throws InputException {
+                   String state, String zipcode, int active) 
+                   throws InputException {
+        String exceptionString = "";
         if(ID < 0 || ID > 1000000000) {
-            throw new InputException("ID must be a positive 9-digit number.");
+            exceptionString += "ID must be a positive 9-digit number.\n";
         }
 
         if(isBlankOrTooManyChars(name, 25)) {
-            throw new InputException("Name must not be blank and must " +
-                    "contain fewer than 25 characters.");
+            exceptionString += "Name must not be blank and must " +
+                    "contain fewer than 25 characters.\n";
         }
 
         if(isBlankOrTooManyChars(address, 25)) {
-            throw new InputException("Address must not be blank and must " +
-                    "contain fewer than 25 characters.");
+            exceptionString += "Address must not be blank and must " +
+                    "contain fewer than 25 characters.\n";
         }
 
         if(isBlankOrTooManyChars(city, 14)) {
-            throw new InputException("Address must not be blank and must " +
-                    "contain fewer than 25 characters.");
+            exceptionString += "City must not be blank and must " +
+                    "contain fewer than 14 characters.\n";
         }
 
         if(!(state.matches("^[a-zA-Z]{2}$"))) {
-            throw new InputException("State must be two characters.");
+            exceptionString += "State must be two characters.\n";
         }
 
         if(!(zipcode.matches("^\\d{5}$"))) {
-            throw new InputException("Zipcode must be five numbers.");
+            exceptionString += "Zipcode must be five numbers.\n";
+        }
+
+        if(!(exceptionString.isEmpty())) {
+            exceptionString = exceptionString.substring(0,
+                                  exceptionString.length() - 1); 
+            throw new InputException(exceptionString);
         }
 
         _ID = ID;
@@ -37,6 +47,14 @@ public abstract class Entity {
         _city = city;
         _state = state;
         _zipcode = zipcode;
+        if(active != 0) {
+            _active = true;
+        }
+
+        else {
+            _active = false;
+        }
+
         return;
     }
 
@@ -45,8 +63,9 @@ public abstract class Entity {
     }
 
     public Entity(String name, String address, String city,
-                   String state, String zipcode) throws InputException {
-        this(0, name, address, city, state, zipcode);
+                   String state, String zipcode, int active) 
+                   throws InputException {
+        this(0, name, address, city, state, zipcode, active);
     }
 
     // Getter functions.

@@ -21,6 +21,7 @@ public class Database {
             return;
         }
         System.out.println("Opened database successfully.");
+
         createPatientTable();
         createTransactionTable();
         createServiceTable();
@@ -48,6 +49,8 @@ public class Database {
             "CITY varchar(14) NOT NULL, " +
             "STATE char(2) NOT NULL, " +
             "ZIPCODE char(5) NOT NULL, " +
+            "ACTIVE int NOT NULL," +
+            "STANDING int NOT NULL," +
             "PRIMARY KEY (PATIENT_ID)" +
             ")";
 
@@ -122,6 +125,7 @@ public class Database {
             "SERVICE_ID int NOT NULL, " +
             "SERVICE_NAME varchar(20) NOT NULL, " +
             "SERVICE_PRICE float NOT NULL, " +
+            "ACTIVE int NOT NULL," +
             "PRIMARY KEY (SERVICE_ID)" +
             ")";
 
@@ -155,7 +159,12 @@ public class Database {
             "Providers " + 
             "(" +
             "PROVIDER_ID int NOT NULL, " +
-            "PROVIDER_NAME varchar(20) NOT NULL, " +
+            "NAME varchar(25) NOT NULL, " +
+            "ADDRESS varchar(25) NOT NULL, " +
+            "CITY varchar(14) NOT NULL, " +
+            "STATE char(2) NOT NULL, " +
+            "ZIPCODE char(5) NOT NULL, " +
+            "ACTIVE int NOT NULL," +
             "PRIMARY KEY (PROVIDER_ID)" +
             ")";
 
@@ -239,7 +248,8 @@ public class Database {
                 currentPatient = new Patient(rs.getString("NAME"),
                         rs.getString("ADDRESS"), rs.getString("CITY"),
                         rs.getString("STATE"),
-                        rs.getString("ZIPCODE"));
+                        rs.getString("ZIPCODE"), rs.getInt("ACTIVE"),
+                        rs.getInt("STANDING"));
 
                 if(currentPatient.equals(newPatient)) {
                     throw new AlreadyExistsException();
@@ -250,7 +260,7 @@ public class Database {
 
             pStatement = conn.prepareStatement (
                 "INSERT INTO Patients " +
-                "VALUES (?, ?, ?, ?, ?, ?)"
+                "VALUES (?, ?, ?, ?, ?, ?, 1, 1)"
             );
 
             pStatement.setInt(1, patientNum);
@@ -309,7 +319,9 @@ public class Database {
                                             splitLine[1], // Address
                                             splitLine[2], // City
                                             splitLine[3], // State
-                                            splitLine[4]  // Zipcode
+                                            splitLine[4], // Zipcode
+                                            1,            // Activity
+                                            1             // Financial Standing
                                           );
                     currentPatientID = addPatient(currentPatient);
 
@@ -370,7 +382,9 @@ public class Database {
                                              rs.getString("ADDRESS"),
                                              rs.getString("CITY"),
                                              rs.getString("STATE"),
-                                             rs.getString("ZIPCODE"));
+                                             rs.getString("ZIPCODE"),
+                                             rs.getInt("ACTIVE"),
+                                             rs.getInt("STANDING"));
                 System.out.println(currentPatient + "\n");
             }
 
