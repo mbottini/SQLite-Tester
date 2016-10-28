@@ -22,6 +22,10 @@ public class mainApp
                 else {
                     System.out.println("ID not found.");
                 }
+
+                Provider newProvider = new Provider(
+                        "Acme", "4 A St", "Portland", "OR", "97123", 1);
+                dBase.addProvider(newProvider);
             }
             catch(InputException e) {
                 System.out.println(e.getMessage());
@@ -38,6 +42,10 @@ public class mainApp
 
             System.out.println();
             dBase.printAllPatients();
+
+            System.out.println("Printing providers...\n");
+
+            dBase.printAllProviders();
 
         }
         catch(SQLException e) {

@@ -474,8 +474,185 @@ public class Database {
         }
     }
 
+    public int addProvider(Provider newProvider) throws SQLException {
+        PreparedStatement pStatement = null;
+
+        try {
+            // See if the provider already exists.
+
+            pStatement = conn.prepareStatement(
+                "SELECT * FROM Providers WHERE NAME = ?"
+            );
+
+            pStatement.setString(1, newProvider.getName());
+
+            ResultSet rs = null;
+            rs = pStatement.executeQuery();
+            Provider currentProvider = null;
+
+            while(rs.next()) {
+                currentProvider = new Provider(rs.getString("NAME"),
+                        rs.getString("ADDRESS"), rs.getString("CITY"),
+                        rs.getString("STATE"),
+                        rs.getString("ZIPCODE"), rs.getInt("ENROLLMENT"));
+
+                if(currentProvider.equals(newProvider)) {
+                    throw new AlreadyExistsException();
+                }
+            }
+
+            // Otherwise, we're good!
+
+            pStatement = conn.prepareStatement (
+                "INSERT INTO Providers " +
+                "VALUES (?, ?, ?, ?, ?, ?, 1)"
+            );
+
+            pStatement.setInt(1, providerNum);
+            pStatement.setString(2, newProvider.getName());
+            pStatement.setString(3, newProvider.getAddress());
+            pStatement.setString(4, newProvider.getCity());
+            pStatement.setString(5, newProvider.getState());
+            pStatement.setString(6, newProvider.getZipcode());
+            pStatement.executeUpdate();
+            providerNum++;
+
+        } catch(SQLException e) {
+             System.err.println(e.getClass().getName() 
+                                + ": " + e.getMessage());
+             return -1;
+        }
+
+        catch(AlreadyExistsException e) {
+            System.out.println("Provider already exists.");
+            return -1;
+        }
+
+        catch(InputException e) {
+            System.out.println("Somehow, an invalid provider is in the " +
+                    "database.");
+            return -1;
+        }
+
+        finally {
+            if(pStatement != null) {
+                pStatement.close();
+            }
+        }
+
+        return patientNum - 1;
+    }
     
+    public Boolean updateProvider(int ID, Provider updateProvider) throws SQLException {
+        PreparedStatement pStatement = null;
 
+        try {
+            // Check if the Patient is there.
 
+            if(!(providerExists(ID))) {
+                return false;
+            }
+
+            // If it exists, we update with the updatePatient object.
+
+            pStatement = conn.prepareStatement(
+                    "UPDATE Provider " +
+                    "SET " +
+                    "NAME = ?, " +
+                    "ADDRESS = ?, " +
+                    "CITY = ?, " +
+                    "STATE = ?, " +
+                    "ZIPCODE = ?, " +
+                    "ENROLLMENT = ?, " +
+                    "WHERE PROVIDER_ID = ?"
+            );
+
+            pStatement.setString(1, updateProvider.getName());
+            pStatement.setString(2, updateProvider.getAddress());
+            pStatement.setString(3, updateProvider.getCity());
+            pStatement.setString(4, updateProvider.getState());
+            pStatement.setString(5, updateProvider.getZipcode());
+            pStatement.setInt(6, (updateProvider.getEnrollmentStatus())? 1 : 0);
+            pStatement.setInt(7, ID);
+
+            pStatement.executeUpdate();
+        }
+
+        catch (SQLException e) {
+            System.err.println(e.getClass() + ": " + e.getMessage());
+            return false;
+        }
+
+        finally {
+            if(pStatement != null) {
+                pStatement.close();
+            }
+        }
+
+        return true;
+    }
+
+    Boolean providerExists(int ID) throws SQLException {
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery (
+                "SELECT * FROM Providers WHERE PATIENT_ID = " +
+                Integer.toString(ID)
+                );
+
+        if(rs.next()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public Boolean removeProvider(int ID) throws SQLException {
+        Statement stmt = null;
+        if (providerExists(ID)) {
+            stmt = conn.createStatement();
+            stmt.executeUpdate(
+                   "UPDATE Providers " +
+                   "SET " +
+                   "ENROLLMENT = 0 " +
+                   "WHERE PROVIDER_ID = " +
+                   Integer.toString(ID)
+            );
+            return true;
+        }
+
+        return false;
+    }
+
+    public void printAllProviders() throws SQLException {
+        Statement stmt = null;
+        Provider currentProvider;
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery (
+                    "SELECT * FROM Providers");
+            while(rs.next()) {
+                currentProvider = new Provider(rs.getInt("PROVIDER_ID"),
+                                             rs.getString("NAME"),
+                                             rs.getString("ADDRESS"),
+                                             rs.getString("CITY"),
+                                             rs.getString("STATE"),
+                                             rs.getString("ZIPCODE"),
+                                             rs.getInt("ENROLLMENT"));
+                System.out.println(currentProvider + "\n");
+            }
+
+            rs.close();
+
+        }
+        catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+
+        finally {
+            if(stmt != null) {
+                stmt.close();
+            }
+        }
+    }
 
 }
