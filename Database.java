@@ -359,7 +359,7 @@ public class Database {
         return;
     }
 
-    Boolean updatePatient(int ID, Patient updatePatient) throws SQLException {
+    public Boolean updatePatient(int ID, Patient updatePatient) throws SQLException {
         PreparedStatement pStatement = null;
 
         try {
@@ -410,6 +410,23 @@ public class Database {
         return true;
     }
 
+    public Boolean removePatient(int ID) throws SQLException {
+        Statement stmt = null;
+        if (patientExists(ID)) {
+            stmt = conn.createStatement();
+            stmt.executeUpdate(
+                   "UPDATE Patients " +
+                   "SET " +
+                   "ACTIVE = 0 " +
+                   "WHERE PATIENT_ID = " +
+                   Integer.toString(ID)
+            );
+            return true;
+        }
+
+        return false;
+    }
+
     Boolean patientExists(int ID) throws SQLException {
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery (
@@ -423,11 +440,6 @@ public class Database {
 
         return false;
     }
-
-
-
-
-    
 
     public void printAllPatients() throws SQLException {
         Statement stmt = null;
