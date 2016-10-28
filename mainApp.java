@@ -6,6 +6,7 @@ public class mainApp
         try {
             Database dBase = new Database();
             dBase.addPatients("patients.csv");
+            dBase.addProviders("providers.csv");
 
             System.out.println("\nPrinting patients...\n");
             dBase.printAllPatients();
@@ -22,10 +23,6 @@ public class mainApp
                 else {
                     System.out.println("ID not found.");
                 }
-
-                Provider newProvider = new Provider(
-                        "Acme", "4 A St", "Portland", "OR", "97123", 1);
-                dBase.addProvider(newProvider);
             }
             catch(InputException e) {
                 System.out.println(e.getMessage());

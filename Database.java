@@ -542,6 +542,74 @@ public class Database {
 
         return patientNum - 1;
     }
+
+    public void addProviders(String filename) {
+        String line;
+        Provider currentProvider;
+        int currentProviderID;
+        int lineNumber = 1;
+
+        // Fatal exception try.
+        try {
+            BufferedReader reader = new BufferedReader(
+                                        new FileReader(filename)
+                                    );
+
+            while((line = reader.readLine()) != null) {
+                String [] splitLine = line.split(",");
+                // Individual line exception try.
+                try {
+                    currentProvider = new Provider(
+                                            splitLine[0], // Name
+                                            splitLine[1], // Address
+                                            splitLine[2], // City
+                                            splitLine[3], // State
+                                            splitLine[4], // Zipcode
+                                            1             // Enrollment Status
+                                          );
+                    currentProviderID = addProvider(currentProvider);
+
+                    if(currentProviderID != -1) {
+                        System.out.println("Added " + currentProvider.getName() +
+                                           " to database. ID = " +
+                                           currentProviderID);
+                    }
+
+                    else {
+                        System.out.println("Tried to add " +
+                            currentProvider.getName() + 
+                            ", but patient already exists.");
+                    }
+                }
+                catch(InputException e) {
+                    System.out.println("Error for " + splitLine[0] + ": " +
+                                       e.getMessage());
+                }
+                catch(ArrayIndexOutOfBoundsException e) {
+                    System.out.println("ArrayIndexOutOfBounds exception on line " +
+                            Integer.toString(lineNumber));
+                }
+                catch(NumberFormatException e) {
+                    System.out.println("NumberFormatException on line " +
+                            Integer.toString(lineNumber));
+                }
+                
+
+                lineNumber++;
+            }
+            
+        }
+        catch(SQLException e) {
+            System.err.println(e.getClass() + ": " + e.getMessage());
+            return;
+        }
+        catch(IOException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        return;
+    }
     
     public Boolean updateProvider(int ID, Provider updateProvider) throws SQLException {
         PreparedStatement pStatement = null;
