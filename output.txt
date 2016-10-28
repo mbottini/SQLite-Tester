@@ -1,0 +1,170 @@
+Opened database successfully.
+Patients table found.
+Transactions table found.
+Services table found.
+Providers table found.
+Error for Tom Bottini: Address must not be blank and must contain fewer than 25 characters.
+Patient already exists.
+Tried to add Michael Bottini, but patient already exists.
+Patient already exists.
+Tried to add Michael Bottini, but patient already exists.
+Patient already exists.
+Tried to add Richard Butt, but patient already exists.
+Patient already exists.
+Tried to add Foo Bar, but patient already exists.
+Patient already exists.
+Tried to add Crappy ID, but patient already exists.
+Patient already exists.
+Tried to add ID Should Exist Already, but patient already exists.
+ArrayIndexOutOfBounds exception on line 8
+ArrayIndexOutOfBounds exception on line 9
+Error for Multiple Errors: Address must not be blank and must contain fewer than 25 characters.
+City must not be blank and must contain fewer than 14 characters.
+State must be two characters.
+Zipcode must be five numbers.
+Provider already exists.
+Tried to add Acme, but provider already exists.
+Provider already exists.
+Tried to add Beta Counseling, but provider already exists.
+Provider already exists.
+Tried to add Gamma Massage, but provider already exists.
+Provider already exists.
+Tried to add Delta Hypnosis, but provider already exists.
+Tried to add Massage, but service already exists.
+Tried to add Hypnosis, but service already exists.
+Tried to add Counseling, but service already exists.
+
+Printing patients...
+
+Patient ID: 0
+Name: Michael Bottini
+Address: 123 Park Place
+City: Hillsboro
+State: OR
+Zipcode: 97123
+Enrollment Status: Active
+Financial Standing: Good
+
+Patient ID: 1
+Name: Richard Butt
+Address: 18 Stuff Ave
+City: Southborough
+State: MA
+Zipcode: 01701
+Enrollment Status: Inactive
+Financial Standing: Good
+
+Patient ID: 2
+Name: Foo Bar
+Address: 82 Meta St
+City: Tigard
+State: OR
+Zipcode: 97124
+Enrollment Status: Active
+Financial Standing: Good
+
+Patient ID: 3
+Name: Crappy ID
+Address: 81 Foo St
+City: Bar
+State: OH
+Zipcode: 89124
+Enrollment Status: Active
+Financial Standing: Good
+
+Patient ID: 4
+Name: ID Should Exist Already
+Address: 1289 Bar Ave
+City: Macon
+State: GA
+Zipcode: 12712
+Enrollment Status: Active
+Financial Standing: Good
+
+Updating patient...
+ID not found.
+
+Removing ID = 1...
+Removed.
+
+Patient ID: 0
+Name: Michael Bottini
+Address: 123 Park Place
+City: Hillsboro
+State: OR
+Zipcode: 97123
+Enrollment Status: Active
+Financial Standing: Good
+
+Patient ID: 1
+Name: Richard Butt
+Address: 18 Stuff Ave
+City: Southborough
+State: MA
+Zipcode: 01701
+Enrollment Status: Inactive
+Financial Standing: Good
+
+Patient ID: 2
+Name: Foo Bar
+Address: 82 Meta St
+City: Tigard
+State: OR
+Zipcode: 97124
+Enrollment Status: Active
+Financial Standing: Good
+
+Patient ID: 3
+Name: Crappy ID
+Address: 81 Foo St
+City: Bar
+State: OH
+Zipcode: 89124
+Enrollment Status: Active
+Financial Standing: Good
+
+Patient ID: 4
+Name: ID Should Exist Already
+Address: 1289 Bar Ave
+City: Macon
+State: GA
+Zipcode: 12712
+Enrollment Status: Active
+Financial Standing: Good
+
+Printing providers...
+
+Provider ID : 0
+Name: Acme
+Address: 4 A Street
+City: Portland
+State: OR
+Zipcode: 97123
+Enrollment Status: Active
+
+Provider ID : 1
+Name: Beta Counseling
+Address: 6 Stuff St
+City: Pigknuckle
+State: AR
+Zipcode: 87912
+Enrollment Status: Active
+
+Provider ID : 2
+Name: Gamma Massage
+Address: 4 Aleph St
+City: Pineapple
+State: AL
+Zipcode: 12341
+Enrollment Status: Active
+
+Provider ID : 3
+Name: Delta Hypnosis
+Address: 14 Stuff St
+City: Pigknuckle
+State: AR
+Zipcode: 87912
+Enrollment Status: Active
+
+Printing services...
+

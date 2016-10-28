@@ -7,6 +7,7 @@ public class mainApp
             Database dBase = new Database();
             dBase.addPatients("patients.csv");
             dBase.addProviders("providers.csv");
+            dBase.addServices("services.csv");
 
             System.out.println("\nPrinting patients...\n");
             dBase.printAllPatients();
@@ -43,6 +44,10 @@ public class mainApp
             System.out.println("Printing providers...\n");
 
             dBase.printAllProviders();
+
+            System.out.println("Printing services...\n");
+
+            dBase.printAllServices();
 
         }
         catch(SQLException e) {

@@ -123,9 +123,9 @@ public class Database {
             "Services " + 
             "(" +
             "SERVICE_ID int NOT NULL, " +
-            "SERVICE_NAME varchar(20) NOT NULL, " +
-            "SERVICE_PRICE float NOT NULL, " +
-            "ENROLLMENT int NOT NULL," +
+            "NAME varchar(20) NOT NULL, " +
+            "PRICE float NOT NULL, " +
+            "ACTIVE int NOT NULL," +
             "PRIMARY KEY (SERVICE_ID)" +
             ")";
 
@@ -578,7 +578,7 @@ public class Database {
                     else {
                         System.out.println("Tried to add " +
                             currentProvider.getName() + 
-                            ", but patient already exists.");
+                            ", but provider already exists.");
                     }
                 }
                 catch(InputException e) {
@@ -624,7 +624,7 @@ public class Database {
             // If it exists, we update with the updatePatient object.
 
             pStatement = conn.prepareStatement(
-                    "UPDATE Provider " +
+                    "UPDATE Providers " +
                     "SET " +
                     "NAME = ?, " +
                     "ADDRESS = ?, " +
@@ -708,5 +708,221 @@ public class Database {
             }
         }
     }
+    public int addService(Service newService) throws SQLException {
+        PreparedStatement pStatement = null;
 
+        try {
+            // See if the provider already exists.
+
+            pStatement = conn.prepareStatement(
+                "SELECT * FROM Services WHERE NAME = ?"
+            );
+
+            pStatement.setString(1, newService.getName());
+
+            ResultSet rs = null;
+            rs = pStatement.executeQuery();
+            Service currentService = null;
+
+            while(rs.next()) {
+                currentService = new Service(rs.getString("NAME"),
+                        rs.getFloat("PRICE"), rs.getInt("ACTIVE"));
+
+                if(currentService.equals(newService)) {
+                    throw new AlreadyExistsException();
+                }
+            }
+
+            // Otherwise, we're good!
+
+            pStatement = conn.prepareStatement (
+                "INSERT INTO Services " +
+                "VALUES (?, ?, ?, 1)"
+            );
+
+            pStatement.setInt(1, serviceNum);
+            pStatement.setString(2, newService.getName());
+            pStatement.setFloat(3, newService.getPrice());
+
+            pStatement.executeUpdate();
+            serviceNum++;
+
+        } catch(SQLException e) {
+             System.err.println(e.getClass().getName() 
+                                + ": " + e.getMessage());
+             return -1;
+        }
+
+        catch(AlreadyExistsException e) {
+            System.out.println("Service already exists.");
+            return -1;
+        }
+
+        catch(InputException e) {
+            System.out.println("Somehow, an invalid service is in the " +
+                    "database.");
+            return -1;
+        }
+
+        finally {
+            if(pStatement != null) {
+                pStatement.close();
+            }
+        }
+
+        return patientNum - 1;
+    }
+
+    public void addServices(String filename) {
+        String line;
+        Service currentService;
+        int currentServiceID;
+        int lineNumber = 1;
+
+        // Fatal exception try.
+        try {
+            BufferedReader reader = new BufferedReader(
+                                        new FileReader(filename)
+                                    );
+
+            while((line = reader.readLine()) != null) {
+                String [] splitLine = line.split(",");
+                // Individual line exception try.
+                try {
+                    currentService = new Service(
+                                        splitLine[0],                  // Name
+                                        Float.parseFloat(splitLine[1]),// Price
+                                        1                              // Active
+                                     );
+                    currentServiceID = addService(currentService);
+
+                    if(currentServiceID != -1) {
+                        System.out.println("Added " + currentService.getName() +
+                                           " to database. ID = " +
+                                           currentServiceID);
+                    }
+
+                    else {
+                        System.out.println("Tried to add " +
+                            currentService.getName() + 
+                            ", but service already exists.");
+                    }
+                }
+                catch(InputException e) {
+                    System.out.println("Error for " + splitLine[0] + ": " +
+                                       e.getMessage());
+                }
+                catch(ArrayIndexOutOfBoundsException e) {
+                    System.out.println("ArrayIndexOutOfBounds exception on line " +
+                            Integer.toString(lineNumber));
+                }
+                catch(NumberFormatException e) {
+                    System.out.println("NumberFormatException on line " +
+                            Integer.toString(lineNumber));
+                }
+                
+
+                lineNumber++;
+            }
+            
+        }
+        catch(SQLException e) {
+            System.err.println(e.getClass() + ": " + e.getMessage());
+            return;
+        }
+        catch(IOException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        return;
+    }
+    
+    public Boolean updateService(int ID, Service updateService) throws SQLException {
+        PreparedStatement pStatement = null;
+
+        try {
+            // Check if the Patient is there.
+
+            if(!(entryExists("Services", ID))) {
+                return false;
+            }
+
+            // If it exists, we update with the updatePatient object.
+
+            pStatement = conn.prepareStatement(
+                    "UPDATE Services " +
+                    "SET " +
+                    "NAME = ?, " +
+                    "PRICE = ?, " +
+                    "ACTIVE = ?, " +
+                    "WHERE SERVICE_ID = ?"
+            );
+
+            pStatement.setString(1, updateService.getName());
+            pStatement.setFloat(2, updateService.getPrice());
+            pStatement.setInt(3, (updateService.getActive()? 1 : 0));
+
+            pStatement.executeUpdate();
+        }
+
+        catch (SQLException e) {
+            System.err.println(e.getClass() + ": " + e.getMessage());
+            return false;
+        }
+
+        finally {
+            if(pStatement != null) {
+                pStatement.close();
+            }
+        }
+
+        return true;
+    }
+
+    public Boolean removeService(int ID) throws SQLException {
+        Statement stmt = null;
+        if (entryExists("Services", ID)) {
+            stmt = conn.createStatement();
+            stmt.executeUpdate(
+                   "UPDATE Services " +
+                   "SET " +
+                   "ACTIVE = 0 " +
+                   "WHERE SERVICE_ID = " +
+                   Integer.toString(ID)
+            );
+            return true;
+        }
+
+        return false;
+    }
+
+    public void printAllServices() throws SQLException {
+        Statement stmt = null;
+        Service currentService;
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery (
+                    "SELECT * FROM Services");
+            while(rs.next()) {
+                currentService = new Service(rs.getInt("SERVICE_ID"),
+                                             rs.getString("NAME"),
+                                             rs.getFloat("PRICE"),
+                                             rs.getInt("ACTIVE"));
+                System.out.println(currentService + "\n");
+            }
+
+            rs.close();
+
+        }
+        catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+
+        finally {
+            if(stmt != null) {
+                stmt.close();
+            }
+        }
+    }
 }
