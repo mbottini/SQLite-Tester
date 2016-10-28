@@ -221,15 +221,6 @@ public class Database {
     // addPatient functions from Patient object and CSV.
 
     public int addPatient(Patient newPatient) throws SQLException {
-        try {
-            Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection("jdbc:sqlite:database.db");
-        }
-        catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            return -1;
-        }
-
         PreparedStatement pStatement = null;
 
         try {
@@ -442,7 +433,6 @@ public class Database {
         Statement stmt = null;
         Patient currentPatient;
         try {
-            Class.forName("org.sqlite.JDBC");
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery (
                     "SELECT * FROM Patients");
