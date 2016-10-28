@@ -365,7 +365,7 @@ public class Database {
         try {
             // Check if the Patient is there.
 
-            if(!(patientExists(ID))) {
+            if(!(entryExists("Patients", ID))) {
                 return false;
             }
 
@@ -412,7 +412,7 @@ public class Database {
 
     public Boolean removePatient(int ID) throws SQLException {
         Statement stmt = null;
-        if (patientExists(ID)) {
+        if (entryExists("Patients", ID)) {
             stmt = conn.createStatement();
             stmt.executeUpdate(
                    "UPDATE Patients " +
@@ -427,10 +427,10 @@ public class Database {
         return false;
     }
 
-    Boolean patientExists(int ID) throws SQLException {
+    private Boolean entryExists(String tableName, int ID) throws SQLException {
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery (
-                "SELECT * FROM Patients WHERE PATIENT_ID = " +
+                "SELECT * FROM " + tableName + " WHERE PATIENT_ID = " +
                 Integer.toString(ID)
                 );
 
@@ -549,7 +549,7 @@ public class Database {
         try {
             // Check if the Patient is there.
 
-            if(!(providerExists(ID))) {
+            if(!(entryExists("Providers", ID))) {
                 return false;
             }
 
@@ -592,23 +592,9 @@ public class Database {
         return true;
     }
 
-    Boolean providerExists(int ID) throws SQLException {
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery (
-                "SELECT * FROM Providers WHERE PATIENT_ID = " +
-                Integer.toString(ID)
-                );
-
-        if(rs.next()) {
-            return true;
-        }
-
-        return false;
-    }
-
     public Boolean removeProvider(int ID) throws SQLException {
         Statement stmt = null;
-        if (providerExists(ID)) {
+        if (entryExists("Providers", ID)) {
             stmt = conn.createStatement();
             stmt.executeUpdate(
                    "UPDATE Providers " +
