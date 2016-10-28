@@ -238,7 +238,7 @@ public class Database {
                 "SELECT * FROM Patients WHERE NAME = ?"
             );
 
-            pStatement.setString(1, newPatient.name());
+            pStatement.setString(1, newPatient.getName());
 
             ResultSet rs = null;
             rs = pStatement.executeQuery();
@@ -264,11 +264,11 @@ public class Database {
             );
 
             pStatement.setInt(1, patientNum);
-            pStatement.setString(2, newPatient.name());
-            pStatement.setString(3, newPatient.address());
-            pStatement.setString(4, newPatient.city());
-            pStatement.setString(5, newPatient.state());
-            pStatement.setString(6, newPatient.zipcode());
+            pStatement.setString(2, newPatient.getName());
+            pStatement.setString(3, newPatient.getAddress());
+            pStatement.setString(4, newPatient.getCity());
+            pStatement.setString(5, newPatient.getState());
+            pStatement.setString(6, newPatient.getZipcode());
             pStatement.executeUpdate();
             patientNum++;
 
@@ -326,14 +326,14 @@ public class Database {
                     currentPatientID = addPatient(currentPatient);
 
                     if(currentPatientID != -1) {
-                        System.out.println("Added " + currentPatient.name() +
+                        System.out.println("Added " + currentPatient.getName() +
                                            " to database. ID = " +
                                            currentPatientID);
                     }
 
                     else {
                         System.out.println("Tried to add " +
-                            currentPatient.name() + 
+                            currentPatient.getName() + 
                             ", but patient already exists.");
                     }
                 }

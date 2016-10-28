@@ -5,9 +5,9 @@ public class Patient extends Entity {
     Boolean _financialStanding;
 
     public Patient(int ID, String name, String address, String city, 
-            String state, String zipcode, int active, int financialStanding) 
+            String state, String zipcode, int enrollmentStatus, int financialStanding) 
             throws InputException {
-        super(ID, name, address, city, state, zipcode, active);
+        super(ID, name, address, city, state, zipcode, enrollmentStatus);
 
         if(financialStanding != 0) {
             _financialStanding = true;
@@ -19,10 +19,14 @@ public class Patient extends Entity {
     }
 
     public Patient(String name, String address, String city, String state,
-             String zipcode, int active, int financialStanding) 
+             String zipcode, int enrollmentStatus, int financialStanding) 
              throws InputException {
-        this(0, name, address, city, state, zipcode, active, 
+        this(0, name, address, city, state, zipcode, enrollmentStatus, 
              financialStanding);
+    }
+
+    public Boolean getFinancialStanding() {
+        return _financialStanding;
     }
 
     @Override
@@ -33,7 +37,8 @@ public class Patient extends Entity {
                "City: " + _city + "\n" +
                "State: " + _state + "\n" +
                "Zipcode: " + _zipcode + "\n" +
-               "Active: " + ((_active)? "Yes\n" : "No\n") +
+               "Enrollment Status: " + 
+               ((_enrollmentStatus)? "Active\n" : "Inactive\n") +
                "Financial Standing: " + 
                (_financialStanding? "Good" : "Suspended");
     }   

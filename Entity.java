@@ -2,10 +2,10 @@ public abstract class Entity {
     int _ID;
     String _name, _address, _city, _state, _zipcode;
 
-    Boolean _active;
+    Boolean _enrollmentStatus;
 
     public Entity(int ID, String name, String address, String city,
-                   String state, String zipcode, int active) 
+                   String state, String zipcode, int enrollmentStatus) 
                    throws InputException {
         String exceptionString = "";
         if(ID < 0 || ID > 1000000000) {
@@ -47,12 +47,12 @@ public abstract class Entity {
         _city = city;
         _state = state;
         _zipcode = zipcode;
-        if(active != 0) {
-            _active = true;
+        if(enrollmentStatus != 0) {
+            _enrollmentStatus = true;
         }
 
         else {
-            _active = false;
+            _enrollmentStatus = false;
         }
 
         return;
@@ -63,35 +63,39 @@ public abstract class Entity {
     }
 
     public Entity(String name, String address, String city,
-                   String state, String zipcode, int active) 
+                   String state, String zipcode, int enrollmentStatus) 
                    throws InputException {
-        this(0, name, address, city, state, zipcode, active);
+        this(0, name, address, city, state, zipcode, enrollmentStatus);
     }
 
     // Getter functions.
 
-    public int ID() {
+    public int getID() {
         return _ID;
     }
 
-    public String name() {
+    public String getName() {
         return _name;
     }
 
-    public String address() {
+    public String getAddress() {
         return _address;
     }
 
-    public String city() {
+    public String getCity() {
         return _city;
     }
 
-    public String state() {
+    public String getState() {
         return _state;
     }
 
-    public String zipcode() {
+    public String getZipcode() {
         return _zipcode;
+    }
+
+    public Boolean getEnrollmentStatus() {
+        return _enrollmentStatus;
     }
 
     // Printing a Patient value.
@@ -120,11 +124,11 @@ public abstract class Entity {
 
         // And we have to do this for every single string...
 
-        if(!(compareStrings(_name, other.name())) ||
-           !(compareStrings(_address, other.address())) ||
-           !(compareStrings(_city, other.city())) ||
-           !(compareStrings(_state, other.state())) ||
-           !(compareStrings(_zipcode, other.zipcode()))) {
+        if(!(compareStrings(_name, other.getName())) ||
+           !(compareStrings(_address, other.getAddress())) ||
+           !(compareStrings(_city, other.getCity())) ||
+           !(compareStrings(_state, other.getState())) ||
+           !(compareStrings(_zipcode, other.getZipcode()))) {
             return false;
         }
 
