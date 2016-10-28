@@ -11,12 +11,18 @@ public class mainApp
             dBase.printAllPatients();
 
 
-            System.out.println("\nUpdating patient...\n");
+            System.out.println("Updating patient...");
 
             try {
             Patient updatePatient = new Patient("Michael Bottini", "4 Cross St",
                     "Southborough", "MA", "91234", 1, 0);
-            dBase.updatePatient(0, updatePatient);
+            if(dBase.updatePatient(5912, updatePatient)) {
+                System.out.println("Patient updated.");
+            }
+
+            else {
+                System.out.println("ID not found.");
+            }
             }
 
             catch(InputException e) {

@@ -372,6 +372,14 @@ public class Database {
         PreparedStatement pStatement = null;
 
         try {
+            // Check if the Patient is there.
+
+            if(!(patientExists(ID))) {
+                return false;
+            }
+
+            // If it exists, we update with the updatePatient object.
+
             pStatement = conn.prepareStatement(
                     "UPDATE Patients " +
                     "SET " +
@@ -395,8 +403,6 @@ public class Database {
             pStatement.setInt(8, ID);
 
             pStatement.executeUpdate();
-            
-            System.out.println(updatePatient.getName() + " updated.");
         }
 
         catch (SQLException e) {
@@ -412,6 +418,22 @@ public class Database {
 
         return true;
     }
+
+    Boolean patientExists(int ID) throws SQLException {
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery (
+                "SELECT * FROM Patients WHERE PATIENT_ID = " +
+                Integer.toString(ID)
+                );
+
+        if(rs.next()) {
+            return true;
+        }
+
+        return false;
+    }
+
+
 
 
     
