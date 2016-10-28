@@ -146,6 +146,7 @@ public class Database {
                     + ": " + e.getMessage());
             }
         }
+
         finally {
             if(stmt != null) {
                 stmt.close();
@@ -320,7 +321,7 @@ public class Database {
                                             splitLine[2], // City
                                             splitLine[3], // State
                                             splitLine[4], // Zipcode
-                                            1,            // Activity
+                                            1,            // Enrollment Status
                                             1             // Financial Standing
                                           );
                     currentPatientID = addPatient(currentPatient);
@@ -367,12 +368,59 @@ public class Database {
         return;
     }
 
+    Boolean updatePatient(int ID, Patient updatePatient) throws SQLException {
+        PreparedStatement pStatement = null;
+
+        try {
+            pStatement = conn.prepareStatement(
+                    "UPDATE Patients " +
+                    "SET " +
+                    "NAME = ?, " +
+                    "ADDRESS = ?, " +
+                    "CITY = ?, " +
+                    "STATE = ?, " +
+                    "ZIPCODE = ?, " +
+                    "ACTIVE = ?, " +
+                    "STANDING = ? " +
+                    "WHERE PATIENT_ID = ?"
+            );
+
+            pStatement.setString(1, updatePatient.getName());
+            pStatement.setString(2, updatePatient.getAddress());
+            pStatement.setString(3, updatePatient.getCity());
+            pStatement.setString(4, updatePatient.getState());
+            pStatement.setString(5, updatePatient.getZipcode());
+            pStatement.setInt(6, (updatePatient.getEnrollmentStatus())? 1 : 0);
+            pStatement.setInt(7, (updatePatient.getFinancialStanding())? 1 : 0 );
+            pStatement.setInt(8, ID);
+
+            pStatement.executeUpdate();
+            
+            System.out.println(updatePatient.getName() + " updated.");
+        }
+
+        catch (SQLException e) {
+            System.err.println(e.getClass() + ": " + e.getMessage());
+            return false;
+        }
+
+        finally {
+            if(pStatement != null) {
+                pStatement.close();
+            }
+        }
+
+        return true;
+    }
+
+
+    
+
     public void printAllPatients() throws SQLException {
         Statement stmt = null;
         Patient currentPatient;
         try {
             Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection("jdbc:sqlite:database.db");
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery (
                     "SELECT * FROM Patients");

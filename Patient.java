@@ -16,6 +16,8 @@ public class Patient extends Entity {
         else {
             _financialStanding = false;
         }
+
+        return;
     }
 
     public Patient(String name, String address, String city, String state,

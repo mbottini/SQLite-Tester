@@ -47,6 +47,7 @@ public abstract class Entity {
         _city = city;
         _state = state;
         _zipcode = zipcode;
+
         if(enrollmentStatus != 0) {
             _enrollmentStatus = true;
         }
