@@ -49,7 +49,7 @@ public class Database {
             "CITY varchar(14) NOT NULL, " +
             "STATE char(2) NOT NULL, " +
             "ZIPCODE char(5) NOT NULL, " +
-            "ACTIVE int NOT NULL," +
+            "ENROLLMENT int NOT NULL," +
             "STANDING int NOT NULL," +
             "PRIMARY KEY (PATIENT_ID)" +
             ")";
@@ -125,7 +125,7 @@ public class Database {
             "SERVICE_ID int NOT NULL, " +
             "SERVICE_NAME varchar(20) NOT NULL, " +
             "SERVICE_PRICE float NOT NULL, " +
-            "ACTIVE int NOT NULL," +
+            "ENROLLMENT int NOT NULL," +
             "PRIMARY KEY (SERVICE_ID)" +
             ")";
 
@@ -165,7 +165,7 @@ public class Database {
             "CITY varchar(14) NOT NULL, " +
             "STATE char(2) NOT NULL, " +
             "ZIPCODE char(5) NOT NULL, " +
-            "ACTIVE int NOT NULL," +
+            "ENROLLMENT int NOT NULL," +
             "PRIMARY KEY (PROVIDER_ID)" +
             ")";
 
@@ -240,7 +240,7 @@ public class Database {
                 currentPatient = new Patient(rs.getString("NAME"),
                         rs.getString("ADDRESS"), rs.getString("CITY"),
                         rs.getString("STATE"),
-                        rs.getString("ZIPCODE"), rs.getInt("ACTIVE"),
+                        rs.getString("ZIPCODE"), rs.getInt("ENROLLMENT"),
                         rs.getInt("STANDING"));
 
                 if(currentPatient.equals(newPatient)) {
@@ -379,7 +379,7 @@ public class Database {
                     "CITY = ?, " +
                     "STATE = ?, " +
                     "ZIPCODE = ?, " +
-                    "ACTIVE = ?, " +
+                    "ENROLLMENT = ?, " +
                     "STANDING = ? " +
                     "WHERE PATIENT_ID = ?"
             );
@@ -417,7 +417,7 @@ public class Database {
             stmt.executeUpdate(
                    "UPDATE Patients " +
                    "SET " +
-                   "ACTIVE = 0 " +
+                   "ENROLLMENT = 0 " +
                    "WHERE PATIENT_ID = " +
                    Integer.toString(ID)
             );
@@ -455,7 +455,7 @@ public class Database {
                                              rs.getString("CITY"),
                                              rs.getString("STATE"),
                                              rs.getString("ZIPCODE"),
-                                             rs.getInt("ACTIVE"),
+                                             rs.getInt("ENROLLMENT"),
                                              rs.getInt("STANDING"));
                 System.out.println(currentPatient + "\n");
             }
