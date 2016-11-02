@@ -114,7 +114,7 @@ class Transaction {
 
     private String getTodayDateLong() {
         Date now = new Date();
-        SimpleDateFormat ft = new SimpleDateFormat("mm-dd-yyyy hh:mm:ss");
+        SimpleDateFormat ft = new SimpleDateFormat("MM-dd-yyyy hh:mm:ss");
         return ft.format(now);
     }
 
@@ -123,7 +123,7 @@ class Transaction {
             return false;
         }
 
-        SimpleDateFormat ft = new SimpleDateFormat("mm-dd-yyyy");
+        SimpleDateFormat ft = new SimpleDateFormat("MM-dd-yyyy");
 
         try {
             Date tryDate = ft.parse(date);
@@ -140,7 +140,7 @@ class Transaction {
             return false;
         }
 
-        SimpleDateFormat ft = new SimpleDateFormat("mm-dd-yyyy hh:mm:ss");
+        SimpleDateFormat ft = new SimpleDateFormat("MM-dd-yyyy hh:mm:ss");
 
         try {
             Date tryDate = ft.parse(date);
