@@ -10,6 +10,7 @@ public class Database {
     int transactionNum;
     int serviceNum;
     int providerNum;
+    int consultNum;
 
     public Database() throws SQLException {
         try {
@@ -32,6 +33,7 @@ public class Database {
         transactionNum = getNumberOfRows("Transactions");
         serviceNum = getNumberOfRows("Services");
         providerNum = getNumberOfRows("Providers");
+        consultNum = getHighestTransaction() + 1;
     }
 
     //            Database Creation Functions
@@ -89,6 +91,7 @@ public class Database {
             "PROVIDER_ID int NOT NULL, " +
             "PATIENT_ID int NOT NULL, " +
             "SERVICE_ID int NOT NULL, " +
+            "CONSULT_ID int NOT NULL, " +
             "COMMENT varchar(100), " +
             "PRIMARY KEY (TRANSACTION_ID)" +
             ")";
@@ -878,6 +881,7 @@ public class Database {
         }
 
         return true;
+
     }
 
     public Boolean removeService(int ID) throws SQLException {
@@ -925,4 +929,235 @@ public class Database {
             }
         }
     }
+
+    public int addTransaction(Transaction newTransaction) throws SQLException {
+        PreparedStatement pStatement = null;
+        Statement stmt = null;
+
+        try {
+            // We need to ensure that the Provider, Patient, and Service IDs
+            // exist.
+
+            if(!entryExists("Patients", newTransaction.getPatientID())) {
+                return -1;
+            }
+
+            if(!entryExists("Providers", newTransaction.getProviderID())) {
+                return -1;
+            }
+
+            if(!entryExists("Services", newTransaction.getServiceID())) {
+                return -1;
+            }
+
+            // Otherwise, we're good!
+
+            pStatement = conn.prepareStatement (
+                "INSERT INTO Transactions " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+            );
+
+            pStatement.setInt(1, transactionNum);
+            pStatement.setString(2, newTransaction.getDateTime());
+            pStatement.setString(3, newTransaction.getServiceDate());
+            pStatement.setInt(4, newTransaction.getProviderID());
+            pStatement.setInt(5, newTransaction.getPatientID());
+            pStatement.setInt(6, newTransaction.getServiceID());
+            pStatement.setInt(7, newTransaction.getConsultID());
+            pStatement.setString(8, newTransaction.getComment());
+
+            pStatement.executeUpdate();
+            transactionNum++;
+
+        } catch(SQLException e) {
+             System.err.println(e.getClass().getName() 
+                                + ": " + e.getMessage());
+             return -1;
+        }
+
+        finally {
+            if(pStatement != null) {
+                pStatement.close();
+            }
+        }
+
+        return transactionNum - 1;
+    }
+
+    public void addTransactions(String filename) {
+        String line;
+        Transaction currentTransaction;
+        int currentTransactionID;
+        int lineNumber = 1;
+
+        // Fatal exception try.
+        try {
+            BufferedReader reader = new BufferedReader(
+                                        new FileReader(filename)
+                                    );
+
+            while((line = reader.readLine()) != null) {
+                String [] splitLine = line.split(",");
+                // Individual line exception try.
+                try {
+                    currentTransaction = new Transaction(
+                            splitLine[0],                      // Service Date
+                            Integer.parseInt(splitLine[1]),    // Provider ID 
+                            Integer.parseInt(splitLine[2]),    // Patient ID
+                            Integer.parseInt(splitLine[3]),    // Service ID
+                            Integer.parseInt(splitLine[4]),    // Consult ID
+                            splitLine[5]                       // Comment
+                                     );
+                    currentTransactionID = addTransaction(currentTransaction);
+
+                    if(currentTransactionID != -1) {
+                        System.out.println("Added " +
+                                currentTransaction.getProviderID() +
+                                " -> " +
+                                currentTransaction.getPatientID() + 
+                                "to database. ID = " + currentTransactionID);
+                    }
+                }
+                catch(InputException e) {
+                    System.out.println("Error for " + 
+                           splitLine[1] + " -> " + splitLine[2] + ": " +
+                                       e.getMessage());
+                }
+                catch(ArrayIndexOutOfBoundsException e) {
+                    System.out.println("ArrayIndexOutOfBounds exception on line " +
+                            Integer.toString(lineNumber));
+                }
+                catch(NumberFormatException e) {
+                    System.out.println("NumberFormatException on line " +
+                            Integer.toString(lineNumber));
+                }
+
+                lineNumber++;
+            }
+            
+        }
+        catch(SQLException e) {
+            System.err.println(e.getClass() + ": " + e.getMessage());
+            return;
+        }
+        catch(IOException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        return;
+    }
+    
+    public Boolean updateTransaction(int ID, Transaction updateTransaction) throws SQLException {
+        PreparedStatement pStatement = null;
+
+        try {
+            // Check if the Transaction is there.
+
+            if(!(entryExists("Transactions", ID))) {
+                return false;
+            }
+
+            // If it exists, we update with the updatePatient object.
+
+            pStatement = conn.prepareStatement(
+                    "UPDATE Transactions " +
+                    "SET " +
+                    "DATE_TIME = ?, " +
+                    "SERVICE_DATE = ?, " +
+                    "PROVIDER_ID = ?, " +
+                    "PATIENT_ID = ?, " +
+                    "SERVICE_ID = ?, " +
+                    "CONSULT_ID = ?, " +
+                    "COMMENT = ?, " +
+                    "WHERE TRANSACTION_ID = ?"
+            );
+
+            pStatement.setString(1, updateTransaction.getDateTime());
+            pStatement.setString(2, updateTransaction.getServiceDate());
+            pStatement.setInt(3, updateTransaction.getProviderID());
+            pStatement.setInt(4, updateTransaction.getPatientID());
+            pStatement.setInt(5, updateTransaction.getServiceID());
+            pStatement.setInt(6, updateTransaction.getConsultID());
+            pStatement.setString(7, updateTransaction.getComment());
+
+            pStatement.executeUpdate();
+        }
+
+        catch (SQLException e) {
+            System.err.println(e.getClass() + ": " + e.getMessage());
+            return false;
+        }
+
+        finally {
+            if(pStatement != null) {
+                pStatement.close();
+            }
+        }
+
+        return true;
+
+    }
+
+    public void printAllTransactions() throws SQLException {
+        Statement stmt = null;
+        Transaction currentTransaction;
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery (
+                    "SELECT * FROM Transactions");
+            while(rs.next()) {
+                currentTransaction = new Transaction(
+                        rs.getInt("TRANSACTION_ID"),
+                        rs.getString("DATE_TIME"),
+                        rs.getString("SERVICE_DATE"),
+                        rs.getInt("PROVIDER_ID"),
+                        rs.getInt("PATIENT_ID"),
+                        rs.getInt("SERVICE_ID"),
+                        rs.getInt("CONSULT_ID"),
+                        rs.getString("COMMENT"));
+                System.out.println(currentTransaction + "\n");
+            }
+
+            rs.close();
+
+        }
+        catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+
+        finally {
+            if(stmt != null) {
+                stmt.close();
+            }
+        }
+    }
+
+    private int getHighestTransaction() throws SQLException {
+        Statement stmt = null;
+
+        try {
+            stmt = conn.createStatement();
+
+            ResultSet rs = stmt.executeQuery(
+                "SELECT count(*) FROM Transactions"
+            );
+
+            if(rs.getInt(1) == 0) {
+                return -1;
+            }
+
+            rs = stmt.executeQuery(
+                "SELECT MAX(CONSULT_ID) FROM Transactions"
+            );
+
+            return rs.getInt(1);
+        }
+
+        finally {
+            if(stmt != null) {
+                stmt.close();
+            }
+        }
+    }       
 }
