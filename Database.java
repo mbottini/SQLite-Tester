@@ -1280,4 +1280,8 @@ public class Database {
         throws SQLException {
         return getEntityByString("Patients", "ADDRESS", address);
     }
+
+    public Vector<Entity> getPatientsByCity(String city) throws SQLException {
+        return getEntityByString("Patients", "CITY", city);
+    }
 }

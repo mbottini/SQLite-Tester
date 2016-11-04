@@ -82,6 +82,15 @@ public class mainApp
                 System.out.println(p);
             }
 
+            System.out.println("\nExecuting getPatientsByCity(\"" +
+                "Hillsboro\")...\n");
+
+            vec = dBase.getPatientsByCity("Hillsboro");
+
+            for(Entity p : vec) {
+                System.out.println(p);
+            }
+
         }
         catch(SQLException e) {
             System.err.println(e.getClass() + ": " + e.getMessage());
