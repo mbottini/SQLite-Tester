@@ -437,7 +437,7 @@ public class Database {
         column += "_ID";
 
         ResultSet rs = stmt.executeQuery(
-            "SELECT * FROM " + tableName + " WHERE " +
+            "SELECT 1 FROM " + tableName + " WHERE " +
             column + " = " + Integer.toString(ID));
 
         if(rs.next()) {
