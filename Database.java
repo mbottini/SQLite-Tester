@@ -87,7 +87,7 @@ public class Database {
             "(" +
             "TRANSACTION_ID int NOT NULL, " +
             "DATE_TIME char(18) NOT NULL, " +
-            "SERVICE_TIME char(10) NOT NULL, " +
+            "SERVICE_DATE char(10) NOT NULL, " +
             "PROVIDER_ID int NOT NULL, " +
             "PATIENT_ID int NOT NULL, " +
             "SERVICE_ID int NOT NULL, " +
@@ -432,10 +432,13 @@ public class Database {
 
     private Boolean entryExists(String tableName, int ID) throws SQLException {
         Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery (
-                "SELECT * FROM " + tableName + " WHERE PATIENT_ID = " +
-                Integer.toString(ID)
-                );
+        String column = tableName.substring(0, tableName.length() - 1);
+        column = column.toUpperCase();
+        column += "_ID";
+
+        ResultSet rs = stmt.executeQuery(
+            "SELECT * FROM " + tableName + " WHERE " +
+            column + " = " + Integer.toString(ID));
 
         if(rs.next()) {
             return true;
@@ -543,7 +546,7 @@ public class Database {
             }
         }
 
-        return patientNum - 1;
+        return providerNum - 1;
     }
 
     public void addProviders(String filename) {
@@ -773,7 +776,7 @@ public class Database {
             }
         }
 
-        return patientNum - 1;
+        return serviceNum - 1;
     }
 
     public void addServices(String filename) {

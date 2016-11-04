@@ -8,6 +8,7 @@ public class mainApp
             dBase.addPatients("patients.csv");
             dBase.addProviders("providers.csv");
             dBase.addServices("services.csv");
+            dBase.addTransactions("transactions.csv");
 
             System.out.println("\nPrinting patients...\n");
             dBase.printAllPatients();
@@ -24,10 +25,6 @@ public class mainApp
                 else {
                     System.out.println("ID not found.");
                 }
-
-                Transaction newTransaction = 
-                    new Transaction("05-20-1991", 1, 2, 3, 4, "");
-                System.out.println(newTransaction);
             }
             catch(InputException e) {
                 System.out.println(e.getMessage());
@@ -52,6 +49,10 @@ public class mainApp
             System.out.println("Printing services...\n");
 
             dBase.printAllServices();
+
+            System.out.println("Printing transactions...\n");
+
+            dBase.printAllTransactions();
 
         }
         catch(SQLException e) {
