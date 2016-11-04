@@ -58,21 +58,29 @@ public class mainApp
 
             System.out.println("Executing getPatientByID(0)...\n");
 
-            Vector<Patient> vec = dBase.getPatientByID(0);
+            Vector<Entity> vec = dBase.getPatientByID(0);
 
-            for(Patient p : vec) {
+            for(Entity p : vec) {
                 System.out.println(p);
             }
 
-            System.out.println("\nExecuting getPatientByName(\"Michael " +
+            System.out.println("\nExecuting getPatientsByName(\"Michael " +
                 "Bottini\")...\n");
 
             vec = dBase.getPatientsByName("Michael Bottini");
 
-            for(Patient p : vec) {
+            for(Entity p : vec) {
                 System.out.println(p);
             }
 
+            System.out.println("\nExecuting getPatientsByAddress(\"" +
+                "123 Park Place\")...\n");
+
+            vec = dBase.getPatientsByAddress("123 Park Place");
+
+            for(Entity p : vec) {
+                System.out.println(p);
+            }
 
         }
         catch(SQLException e) {

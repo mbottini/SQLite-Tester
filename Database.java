@@ -1165,27 +1165,48 @@ public class Database {
         }
     }       
 
-    public Vector<Patient> getPatientByID(int ID) throws SQLException {
+    private Vector<Entity> getEntityByID(String table, int ID) throws SQLException {
+        String IDColumn = table.toUpperCase();
+        IDColumn = IDColumn.substring(0, IDColumn.length() - 1) + "_ID";
+        System.out.println("Inside getEntityByID: " + IDColumn);
+
         Statement stmt = conn.createStatement();
-        Vector<Patient> returnVec = new Vector<Patient>();
 
         ResultSet rs = stmt.executeQuery(
-            "SELECT * FROM Patients WHERE PATIENT_ID = " + Integer.toString(ID)
+            "SELECT * FROM " + table + " WHERE " + IDColumn + " = " +
+            Integer.toString(ID)
         );
+
+        Vector<Entity> returnVec = new Vector<Entity>();
 
         while(rs.next()) {
             try {
-                returnVec.add( new Patient(
-                    rs.getInt("PATIENT_ID"),
-                    rs.getString("NAME"),
-                    rs.getString("ADDRESS"),
-                    rs.getString("CITY"),
-                    rs.getString("STATE"),
-                    rs.getString("ZIPCODE"),
-                    rs.getInt("ENROLLMENT"),
-                    rs.getInt("STANDING")
-                    )
-                );
+                if(IDColumn.matches("PATIENT_ID")) {
+                    returnVec.add( new Patient(
+                        rs.getInt(IDColumn),
+                        rs.getString("NAME"),
+                        rs.getString("ADDRESS"),
+                        rs.getString("CITY"),
+                        rs.getString("STATE"),
+                        rs.getString("ZIPCODE"),
+                        rs.getInt("ENROLLMENT"),
+                        rs.getInt("STANDING")
+                        )
+                    );
+                }
+
+                if(IDColumn.matches("PROVIDER_ID")) {
+                    returnVec.add( new Provider(
+                        rs.getInt(IDColumn),
+                        rs.getString("NAME"),
+                        rs.getString("ADDRESS"),
+                        rs.getString("CITY"),
+                        rs.getString("STATE"),
+                        rs.getString("ZIPCODE"),
+                        rs.getInt("ENROLLMENT")
+                        )
+                    );
+                }
             }
             catch(InputException e) {
                 System.out.println("Somehow, an invalid entry is in the DB.");
@@ -1195,28 +1216,49 @@ public class Database {
         return returnVec;
     }
 
-    public Vector<Patient> getPatientsByName(String name) throws SQLException {
+    private Vector<Entity> getEntityByString(String table, String column, 
+            String criteria) throws SQLException {
         PreparedStatement pStatement = conn.prepareStatement(
-            "SELECT * FROM Patients WHERE NAME = ?"
+            "SELECT * FROM " + table + " WHERE " + column + " = ?"
         );
-        pStatement.setString(1, name);
+        pStatement.setString(1, criteria);
+
         ResultSet rs = pStatement.executeQuery();
 
-        Vector<Patient> returnVec = new Vector<Patient>();
+        Vector<Entity> returnVec = new Vector<Entity>();
+
+        String IDColumn = table.toUpperCase();
+        IDColumn = IDColumn.substring(0, IDColumn.length() - 1) +
+            "_ID";
 
         while(rs.next()) {
             try {
-                returnVec.add( new Patient(
-                    rs.getInt("PATIENT_ID"),
-                    rs.getString("NAME"),
-                    rs.getString("ADDRESS"),
-                    rs.getString("CITY"),
-                    rs.getString("STATE"),
-                    rs.getString("ZIPCODE"),
-                    rs.getInt("ENROLLMENT"),
-                    rs.getInt("STANDING")
-                    )
-                );
+                if(IDColumn.matches("PATIENT_ID")) {
+                    returnVec.add( new Patient(
+                        rs.getInt(IDColumn),
+                        rs.getString("NAME"),
+                        rs.getString("ADDRESS"),
+                        rs.getString("CITY"),
+                        rs.getString("STATE"),
+                        rs.getString("ZIPCODE"),
+                        rs.getInt("ENROLLMENT"),
+                        rs.getInt("STANDING")
+                        )
+                    );
+                }
+
+                if(IDColumn.matches("PROVIDER_ID")) {
+                    returnVec.add( new Provider(
+                        rs.getInt(IDColumn),
+                        rs.getString("NAME"),
+                        rs.getString("ADDRESS"),
+                        rs.getString("CITY"),
+                        rs.getString("STATE"),
+                        rs.getString("ZIPCODE"),
+                        rs.getInt("ENROLLMENT")
+                        )
+                    );
+                }
             }
             catch(InputException e) {
                 System.out.println("Somehow, an invalid entry is in the DB.");
@@ -1224,5 +1266,18 @@ public class Database {
         }
 
         return returnVec;
+    }
+
+    public Vector<Entity> getPatientByID(int ID) throws SQLException {
+        return getEntityByID("Patients", ID);
+    }
+
+    public Vector<Entity> getPatientsByName(String name) throws SQLException {
+        return getEntityByString("Patients", "NAME", name);
+    }
+
+    public Vector<Entity> getPatientsByAddress(String address) 
+        throws SQLException {
+        return getEntityByString("Patients", "ADDRESS", address);
     }
 }
