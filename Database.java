@@ -2,6 +2,7 @@ import java.sql.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Vector;
 
 public class Database {
     Connection conn = null;
@@ -1163,4 +1164,34 @@ public class Database {
             }
         }
     }       
+
+    public Vector<Patient> getPatientByID(int ID) throws SQLException {
+        Statement stmt = conn.createStatement();
+        Vector<Patient> returnVec = new Vector<Patient>();
+
+        ResultSet rs = stmt.executeQuery(
+            "SELECT * FROM Patients WHERE PATIENT_ID = " + Integer.toString(ID)
+        );
+
+        while(rs.next()) {
+            try {
+                returnVec.add( new Patient(
+                    rs.getInt("PATIENT_ID"),
+                    rs.getString("NAME"),
+                    rs.getString("ADDRESS"),
+                    rs.getString("CITY"),
+                    rs.getString("STATE"),
+                    rs.getString("ZIPCODE"),
+                    rs.getInt("ENROLLMENT"),
+                    rs.getInt("STANDING")
+                    )
+                );
+            }
+            catch(InputException e) {
+                System.out.println("Somehow, an invalid entry is in the DB.");
+            }
+        }
+
+        return returnVec;
+    }
 }

@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.Vector;
 
 public class mainApp
 {
@@ -53,6 +54,15 @@ public class mainApp
             System.out.println("Printing transactions...\n");
 
             dBase.printAllTransactions();
+
+
+            System.out.println("Executing getPatientByID(0)...\n");
+
+            Vector<Patient> vec = dBase.getPatientByID(0);
+
+            for(Patient p : vec) {
+                System.out.println(p);
+            }
 
         }
         catch(SQLException e) {
