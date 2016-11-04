@@ -64,6 +64,16 @@ public class mainApp
                 System.out.println(p);
             }
 
+            System.out.println("\nExecuting getPatientByName(\"Michael " +
+                "Bottini\")...\n");
+
+            vec = dBase.getPatientsByName("Michael Bottini");
+
+            for(Patient p : vec) {
+                System.out.println(p);
+            }
+
+
         }
         catch(SQLException e) {
             System.err.println(e.getClass() + ": " + e.getMessage());

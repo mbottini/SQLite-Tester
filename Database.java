@@ -1194,4 +1194,35 @@ public class Database {
 
         return returnVec;
     }
+
+    public Vector<Patient> getPatientsByName(String name) throws SQLException {
+        PreparedStatement pStatement = conn.prepareStatement(
+            "SELECT * FROM Patients WHERE NAME = ?"
+        );
+        pStatement.setString(1, name);
+        ResultSet rs = pStatement.executeQuery();
+
+        Vector<Patient> returnVec = new Vector<Patient>();
+
+        while(rs.next()) {
+            try {
+                returnVec.add( new Patient(
+                    rs.getInt("PATIENT_ID"),
+                    rs.getString("NAME"),
+                    rs.getString("ADDRESS"),
+                    rs.getString("CITY"),
+                    rs.getString("STATE"),
+                    rs.getString("ZIPCODE"),
+                    rs.getInt("ENROLLMENT"),
+                    rs.getInt("STANDING")
+                    )
+                );
+            }
+            catch(InputException e) {
+                System.out.println("Somehow, an invalid entry is in the DB.");
+            }
+        }
+
+        return returnVec;
+    }
 }
