@@ -107,6 +107,56 @@ public class mainApp
                 System.out.println(p);
             }
 
+            System.out.println("Executing getProviderByID(0)...\n");
+
+            vec = dBase.getProviderByID(0);
+
+            for(Entity p : vec) {
+                System.out.println(p);
+            }
+
+            System.out.println("\nExecuting getProvidersByName(\"" +
+                "Acme\")...\n");
+
+            vec = dBase.getProvidersByName("Acme");
+
+            for(Entity p : vec) {
+                System.out.println(p);
+            }
+
+            System.out.println("\nExecuting getProvidersByAddress(\"" +
+                "4 Aleph St\")...\n");
+
+            vec = dBase.getProvidersByAddress("4 Aleph St");
+
+            for(Entity p : vec) {
+                System.out.println(p);
+            }
+
+            System.out.println("\nExecuting getProvidersByCity(\"" +
+                "Pigknuckle\")...\n");
+
+            vec = dBase.getProvidersByCity("Pigknuckle");
+
+            for(Entity p : vec) {
+                System.out.println(p);
+            }
+            System.out.println("\nExecuting getProvidersByState(\"" +
+                "AL\")...\n");
+
+            vec = dBase.getProvidersByState("AL");
+
+            for(Entity p : vec) {
+                System.out.println(p);
+            }
+            System.out.println("\nExecuting getProvidersByZipcode(\"" +
+                "87912\")...\n");
+
+            vec = dBase.getProvidersByZipcode("87912");
+
+            for(Entity p : vec) {
+                System.out.println(p);
+            }
         }
         catch(SQLException e) {
             System.err.println(e.getClass() + ": " + e.getMessage());

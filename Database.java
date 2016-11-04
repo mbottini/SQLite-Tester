@@ -1293,4 +1293,30 @@ public class Database {
         throws SQLException {
         return getEntityByString("Patients", "ZIPCODE", zipcode);
     }
+
+    public Vector<Entity> getProviderByID(int ID) throws SQLException {
+        return getEntityByID("Providers", ID);
+    }
+
+    public Vector<Entity> getProvidersByName(String name) throws SQLException {
+        return getEntityByString("Providers", "NAME", name);
+    }
+
+    public Vector<Entity> getProvidersByAddress(String address)
+        throws SQLException {
+        return getEntityByString("Providers", "ADDRESS", address);
+    }
+
+    public Vector<Entity> getProvidersByCity(String city) throws SQLException {
+        return getEntityByString("Providers", "CITY", city);
+    }
+
+    public Vector<Entity> getProvidersByState(String state) throws SQLException {
+        return getEntityByString("Providers", "STATE", state);
+    }
+
+    public Vector<Entity> getProvidersByZipcode(String zipcode)
+        throws SQLException {
+        return getEntityByString("Providers", "ZIPCODE", zipcode);
+    }
 }
