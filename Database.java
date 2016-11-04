@@ -1284,4 +1284,13 @@ public class Database {
     public Vector<Entity> getPatientsByCity(String city) throws SQLException {
         return getEntityByString("Patients", "CITY", city);
     }
+
+    public Vector<Entity> getPatientsByState(String state) throws SQLException {
+        return getEntityByString("Patients", "STATE", state);
+    }
+
+    public Vector<Entity> getPatientsByZipcode(String zipcode)
+        throws SQLException {
+        return getEntityByString("Patients", "ZIPCODE", zipcode);
+    }
 }

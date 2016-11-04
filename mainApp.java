@@ -90,6 +90,22 @@ public class mainApp
             for(Entity p : vec) {
                 System.out.println(p);
             }
+            System.out.println("\nExecuting getPatientsByState(\"" +
+                "MA\")...\n");
+
+            vec = dBase.getPatientsByState("MA");
+
+            for(Entity p : vec) {
+                System.out.println(p);
+            }
+            System.out.println("\nExecuting getPatientsByZipcode(\"" +
+                "01701\")...\n");
+
+            vec = dBase.getPatientsByZipcode("01701");
+
+            for(Entity p : vec) {
+                System.out.println(p);
+            }
 
         }
         catch(SQLException e) {
