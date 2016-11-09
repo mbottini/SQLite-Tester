@@ -1404,4 +1404,102 @@ public class Database {
         return returnVec;
     }
 
+    private Vector<Transaction> getTransactionByInt(String column, 
+            int criteria) throws SQLException {
+        PreparedStatement pStatement = conn.prepareStatement(
+            "SELECT * FROM " + "Transactions" + " WHERE " + column + " = ?"
+        );
+        pStatement.setInt(1, criteria);
+
+        ResultSet rs = pStatement.executeQuery();
+
+        Vector<Transaction> returnVec = new Vector<Transaction>();
+
+        while(rs.next()) {
+            try {
+                returnVec.add( new Transaction(
+                        rs.getInt("TRANSACTION_ID"),
+                        rs.getString("DATE_TIME"),
+                        rs.getString("SERVICE_DATE"),
+                        rs.getInt("PROVIDER_ID"),
+                        rs.getInt("PATIENT_ID"),
+                        rs.getInt("SERVICE_ID"),
+                        rs.getInt("CONSULT_ID"),
+                        rs.getString("COMMENT")
+                        )
+                    );
+            }
+
+            catch(InputException e) {
+                System.out.println("Somehow, an invalid entry is in the DB.");
+            }
+        }
+
+        return returnVec;
+    }
+
+    private Vector<Transaction> getTransactionByString(String column, 
+            String criteria) throws SQLException {
+        PreparedStatement pStatement = conn.prepareStatement(
+            "SELECT * FROM " + "Transactions" + " WHERE " + 
+            column + " = ?"
+        );
+        pStatement.setString(1, criteria);
+
+        ResultSet rs = pStatement.executeQuery();
+
+        Vector<Transaction> returnVec = new Vector<Transaction>();
+
+        while(rs.next()) {
+            try {
+                returnVec.add( new Transaction(
+                        rs.getInt("TRANSACTION_ID"),
+                        rs.getString("DATE_TIME"),
+                        rs.getString("SERVICE_DATE"),
+                        rs.getInt("PROVIDER_ID"),
+                        rs.getInt("PATIENT_ID"),
+                        rs.getInt("SERVICE_ID"),
+                        rs.getInt("CONSULT_ID"),
+                        rs.getString("COMMENT")
+                        )
+                    );
+            }
+
+            catch(InputException e) {
+                System.out.println("Somehow, an invalid entry is in the DB.");
+            }
+        }
+
+        return returnVec;
+    }
+
+    public Vector<Transaction> getTransactionByID(int ID) throws SQLException{
+        return getTransactionByInt("TRANSACTION_ID", ID);
+    }
+
+    public Vector<Transaction> getTransactionsByDateTime(String dateTime) 
+        throws SQLException{
+        return getTransactionByString("DATE_TIME", dateTime);
+    }
+
+    public Vector<Transaction> getTransactionsByServiceDate(String serviceDate) 
+        throws SQLException{
+        return getTransactionByString("SERVICE_DATE", serviceDate);
+    }
+
+    public Vector<Transaction> getTransactionsByProviderID(int ID) throws SQLException{
+        return getTransactionByInt("PROVIDER_ID", ID);
+    }
+
+    public Vector<Transaction> getTransactionsByPatientID(int ID) throws SQLException{
+        return getTransactionByInt("PATIENT_ID", ID);
+    }
+
+    public Vector<Transaction> getTransactionsByServiceID(int ID) throws SQLException{
+        return getTransactionByInt("SERVICE_ID", ID);
+    }
+
+    public Vector<Transaction> getTransactionsByConsultID(int ID) throws SQLException{
+        return getTransactionByInt("CONSULT_ID", ID);
+    }
 }

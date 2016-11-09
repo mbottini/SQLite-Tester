@@ -182,6 +182,66 @@ public class mainApp
             for(Service s : serviceVec) {
                 System.out.println(s);
             }
+
+            Vector<Transaction> transactionVec;
+
+            System.out.println("\nExecuting getTransmissionByID(0)...\n");
+
+            transactionVec = dBase.getTransactionByID(0);
+
+            for(Transaction t : transactionVec) {
+                System.out.println(t);
+            } 
+
+            System.out.println("\nExecuting getTransmissionsByDateTime(" +
+                "\"Stuff\"" + ")...\n");
+
+            transactionVec = dBase.getTransactionsByServiceDate("Stuff");
+
+            for(Transaction t : transactionVec) {
+                System.out.println(t);
+            } 
+
+            System.out.println("\nExecuting getTransmissionsByServiceDate(" +
+                "\"01-23-1991\"" + ")...\n");
+
+            transactionVec = dBase.getTransactionsByServiceDate("01-23-1991");
+
+            for(Transaction t : transactionVec) {
+                System.out.println(t);
+            } 
+
+            System.out.println("\nExecuting getTransmissionsByProviderID(0)...\n");
+
+            transactionVec = dBase.getTransactionsByProviderID(0);
+
+            for(Transaction t : transactionVec) {
+                System.out.println(t);
+            } 
+
+            System.out.println("\nExecuting getTransmissionsByPatientID(0)...\n");
+
+            transactionVec = dBase.getTransactionsByPatientID(0);
+
+            for(Transaction t : transactionVec) {
+                System.out.println(t);
+            } 
+
+            System.out.println("\nExecuting getTransmissionsByServiceID(0)...\n");
+
+            transactionVec = dBase.getTransactionsByServiceID(0);
+
+            for(Transaction t : transactionVec) {
+                System.out.println(t);
+            } 
+
+            System.out.println("\nExecuting getTransmissionsByConsultID(0)...\n");
+
+            transactionVec = dBase.getTransactionsByConsultID(0);
+
+            for(Transaction t : transactionVec) {
+                System.out.println(t);
+            } 
         }
         catch(SQLException e) {
             System.err.println(e.getClass() + ": " + e.getMessage());
