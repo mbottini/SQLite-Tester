@@ -1319,4 +1319,89 @@ public class Database {
         throws SQLException {
         return getEntityByString("Providers", "ZIPCODE", zipcode);
     }
+
+    public Vector<Service> getServiceByID(int ID) throws SQLException {
+        Statement stmt = conn.createStatement();
+
+        ResultSet rs = stmt.executeQuery(
+            "SELECT * FROM " + "Services" + " WHERE " + "SERVICE_ID = " +
+            Integer.toString(ID)
+        );
+
+        Vector<Service> returnVec = new Vector<Service>();
+
+        while(rs.next()) {
+            try {
+                    returnVec.add( new Service(
+                        rs.getInt("SERVICE_ID"),
+                        rs.getString("NAME"),
+                        rs.getFloat("PRICE"),
+                        rs.getInt("ACTIVE")
+                        )
+                    );
+                }
+            catch(InputException e) {
+                System.out.println("Somehow, an invalid entry is in the DB.");
+            }
+        }
+
+        return returnVec;
+    }
+
+    public Vector<Service> getServiceByName(String name) throws SQLException {
+        PreparedStatement pStatement = conn.prepareStatement(
+            "SELECT * FROM Services WHERE NAME = ?"
+        );
+
+        pStatement.setString(1, name);
+        ResultSet rs = pStatement.executeQuery();
+
+        Vector<Service> returnVec = new Vector<Service>();
+
+        while(rs.next()) {
+            try {
+                    returnVec.add( new Service(
+                        rs.getInt("SERVICE_ID"),
+                        rs.getString("NAME"),
+                        rs.getFloat("PRICE"),
+                        rs.getInt("ACTIVE")
+                        )
+                    );
+                }
+            catch(InputException e) {
+                System.out.println("Somehow, an invalid entry is in the DB.");
+            }
+        }
+
+        return returnVec;
+    }
+
+    public Vector<Service> getServiceByPrice(float price) throws SQLException {
+        Statement stmt = conn.createStatement();
+
+        ResultSet rs = stmt.executeQuery(
+            "SELECT * FROM " + "Services" + " WHERE " + "PRICE = " +
+            Float.toString(price)
+        );
+
+        Vector<Service> returnVec = new Vector<Service>();
+
+        while(rs.next()) {
+            try {
+                    returnVec.add( new Service(
+                        rs.getInt("SERVICE_ID"),
+                        rs.getString("NAME"),
+                        rs.getFloat("PRICE"),
+                        rs.getInt("ACTIVE")
+                        )
+                    );
+                }
+            catch(InputException e) {
+                System.out.println("Somehow, an invalid entry is in the DB.");
+            }
+        }
+
+        return returnVec;
+    }
+
 }

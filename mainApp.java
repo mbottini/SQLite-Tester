@@ -157,6 +157,31 @@ public class mainApp
             for(Entity p : vec) {
                 System.out.println(p);
             }
+
+            System.out.println("\nExecuting getServiceByID(0)...\n");
+
+            Vector<Service> serviceVec = dBase.getServiceByID(0);
+
+            for(Service s : serviceVec) {
+                System.out.println(s);
+            }
+
+            System.out.println("\nExecuting getServiceByName(" +
+                "\"Hypnosis\")...\n");
+
+            serviceVec = dBase.getServiceByName("Hypnosis");
+
+            for(Service s : serviceVec) {
+                System.out.println(s);
+            }
+
+            System.out.println("\nExecuting getServiceByPrice(75.00F)...\n");
+
+            serviceVec = dBase.getServiceByPrice(75.00F);
+
+            for(Service s : serviceVec) {
+                System.out.println(s);
+            }
         }
         catch(SQLException e) {
             System.err.println(e.getClass() + ": " + e.getMessage());
