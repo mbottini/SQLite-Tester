@@ -242,6 +242,14 @@ public class mainApp
             for(Transaction t : transactionVec) {
                 System.out.println(t);
             } 
+
+            System.out.println("\nExecuting getAllActivePatients()...\n");
+
+            vec = dBase.getAllActivePatients();
+
+            for(Entity e : vec) {
+                System.out.println(e);
+            }
         }
         catch(SQLException e) {
             System.err.println(e.getClass() + ": " + e.getMessage());

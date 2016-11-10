@@ -1522,4 +1522,88 @@ public class Database {
     public Vector<Transaction> getTransactionsByConsultID(int ID) throws SQLException{
         return getTransactionByInt("CONSULT_ID", ID);
     }
+
+    private Vector<Entity> getAllActiveEntities(String table) throws SQLException {
+        String IDColumn = table.toUpperCase();
+        IDColumn = IDColumn.substring(0, IDColumn.length() - 1) + "_ID";
+
+        Statement stmt = conn.createStatement();
+
+        ResultSet rs = stmt.executeQuery(
+            "SELECT * FROM " + table + " WHERE ENROLLMENT = 1"
+        );
+
+        Vector<Entity> returnVec = new Vector<Entity>();
+
+        while(rs.next()) {
+            try {
+                if(IDColumn.matches("PATIENT_ID")) {
+                    returnVec.add( new Patient(
+                        rs.getInt(IDColumn),
+                        rs.getString("NAME"),
+                        rs.getString("ADDRESS"),
+                        rs.getString("CITY"),
+                        rs.getString("STATE"),
+                        rs.getString("ZIPCODE"),
+                        rs.getInt("ENROLLMENT"),
+                        rs.getInt("STANDING")
+                        )
+                    );
+                }
+
+                if(IDColumn.matches("PROVIDER_ID")) {
+                    returnVec.add( new Provider(
+                        rs.getInt(IDColumn),
+                        rs.getString("NAME"),
+                        rs.getString("ADDRESS"),
+                        rs.getString("CITY"),
+                        rs.getString("STATE"),
+                        rs.getString("ZIPCODE"),
+                        rs.getInt("ENROLLMENT")
+                        )
+                    );
+                }
+            }
+            catch(InputException e) {
+                System.out.println("Somehow, an invalid entry is in the DB.");
+            }
+        }
+
+        return returnVec;
+    }
+
+    public Vector<Entity> getAllActivePatients() throws SQLException {
+        return getAllActiveEntities("Patients");
+    }
+
+    public Vector<Entity> getAllActiveProviders() throws SQLException {
+        return getAllActiveEntities("Providers");
+    }
+
+    public Vector<Service> getAllActiveServices() throws SQLException {
+        Statement stmt = conn.createStatement();
+
+        ResultSet rs = stmt.executeQuery(
+            "SELECT * FROM SERVICES WHERE ENROLLMENT = 1"
+        );
+
+        Vector<Service> returnVec = new Vector<Service>();
+
+        while(rs.next()) {
+            try {
+                    returnVec.add( new Service(
+                        rs.getInt("SERVICE_ID"),
+                        rs.getString("NAME"),
+                        rs.getFloat("PRICE"),
+                        rs.getInt("ENROLLMENT")
+                        )
+                    );
+                }
+            catch(InputException e) {
+                System.out.println("Somehow, an invalid entry is in the DB.");
+            }
+        }
+
+        return returnVec;
+    }
 }
