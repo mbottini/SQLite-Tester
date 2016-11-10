@@ -129,7 +129,7 @@ public class Database {
             "SERVICE_ID int NOT NULL, " +
             "NAME varchar(20) NOT NULL, " +
             "PRICE float NOT NULL, " +
-            "ACTIVE int NOT NULL," +
+            "ENROLLMENT int NOT NULL," +
             "PRIMARY KEY (SERVICE_ID)" +
             ")";
 
@@ -448,6 +448,26 @@ public class Database {
         return false;
     }
 
+    private Boolean entryExistsAndIsActive(String tableName, int ID) 
+        throws SQLException {
+        Statement stmt = conn.createStatement();
+        String column = tableName.substring(0, tableName.length() - 1);
+        column = column.toUpperCase();
+        column += "_ID";
+
+        ResultSet rs = stmt.executeQuery(
+            "SELECT 1 FROM " + tableName + " WHERE " +
+            column + " = " + Integer.toString(ID) +
+            " AND ENROLLMENT = 1");
+
+        if(rs.next()) {
+            return true;
+        }
+
+        return false;
+    }
+
+
     public void printAllPatients() throws SQLException {
         Statement stmt = null;
         Patient currentPatient;
@@ -733,7 +753,7 @@ public class Database {
 
             while(rs.next()) {
                 currentService = new Service(rs.getString("NAME"),
-                        rs.getFloat("PRICE"), rs.getInt("ACTIVE"));
+                        rs.getFloat("PRICE"), rs.getInt("ENROLLMENT"));
 
                 if(currentService.equals(newService)) {
                     throw new AlreadyExistsException();
@@ -862,7 +882,7 @@ public class Database {
                     "SET " +
                     "NAME = ?, " +
                     "PRICE = ?, " +
-                    "ACTIVE = ?, " +
+                    "ENROLLMENT = ?, " +
                     "WHERE SERVICE_ID = ?"
             );
 
@@ -895,7 +915,7 @@ public class Database {
             stmt.executeUpdate(
                    "UPDATE Services " +
                    "SET " +
-                   "ACTIVE = 0 " +
+                   "ENROLLMENT = 0 " +
                    "WHERE SERVICE_ID = " +
                    Integer.toString(ID)
             );
@@ -916,7 +936,7 @@ public class Database {
                 currentService = new Service(rs.getInt("SERVICE_ID"),
                                              rs.getString("NAME"),
                                              rs.getFloat("PRICE"),
-                                             rs.getInt("ACTIVE"));
+                                             rs.getInt("ENROLLMENT"));
                 System.out.println(currentService + "\n");
             }
 
@@ -942,15 +962,15 @@ public class Database {
             // We need to ensure that the Provider, Patient, and Service IDs
             // exist.
 
-            if(!entryExists("Patients", newTransaction.getPatientID())) {
+            if(!entryExistsAndIsActive("Patients", newTransaction.getPatientID())) {
                 return -1;
             }
 
-            if(!entryExists("Providers", newTransaction.getProviderID())) {
+            if(!entryExistsAndIsActive("Providers", newTransaction.getProviderID())) {
                 return -1;
             }
 
-            if(!entryExists("Services", newTransaction.getServiceID())) {
+            if(!entryExistsAndIsActive("Services", newTransaction.getServiceID())) {
                 return -1;
             }
 
@@ -1336,7 +1356,7 @@ public class Database {
                         rs.getInt("SERVICE_ID"),
                         rs.getString("NAME"),
                         rs.getFloat("PRICE"),
-                        rs.getInt("ACTIVE")
+                        rs.getInt("ENROLLMENT")
                         )
                     );
                 }
@@ -1364,7 +1384,7 @@ public class Database {
                         rs.getInt("SERVICE_ID"),
                         rs.getString("NAME"),
                         rs.getFloat("PRICE"),
-                        rs.getInt("ACTIVE")
+                        rs.getInt("ENROLLMENT")
                         )
                     );
                 }
@@ -1392,7 +1412,7 @@ public class Database {
                         rs.getInt("SERVICE_ID"),
                         rs.getString("NAME"),
                         rs.getFloat("PRICE"),
-                        rs.getInt("ACTIVE")
+                        rs.getInt("ENROLLMENT")
                         )
                     );
                 }
