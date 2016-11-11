@@ -251,10 +251,10 @@ public class mainApp
                 System.out.println(e);
             }
 
-            System.out.println("\nExecuting getWeekTransactionsPatient(1," +
+            System.out.println("\nExecuting getWeekTransactionsByPatient(1," +
                     " \"01-29-1991\")...");
 
-            transactionVec = dBase.getWeekTransactionsPatient(1, "01-29-1991");
+            transactionVec = dBase.getWeekTransactionsByPatient(1, "01-29-1991");
 
             for(Transaction t : transactionVec) {
                 System.out.println(t);

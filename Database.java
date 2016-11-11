@@ -1611,8 +1611,8 @@ public class Database {
         return returnVec;
     }
 
-    public Vector<Transaction> getWeekTransactionsPatient(int ID, 
-                                        String date) throws SQLException {
+    private Vector<Transaction> getWeekTransactions(String column,
+            int ID, String date) throws SQLException {
         SimpleDateFormat inputFormat = new SimpleDateFormat("MM-dd-yyyy");
         SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
         Vector<Transaction> returnVec = new Vector<Transaction>();
@@ -1626,7 +1626,7 @@ public class Database {
 
             PreparedStatement pStatement = conn.prepareStatement(
                 "SELECT * FROM " + "Transactions" + " WHERE " + 
-                "PATIENT_ID = ? AND " +
+                column + " = ? AND " +
                 "SERVICE_DATE > ? AND SERVICE_DATE <= ?"
             );
 
@@ -1664,9 +1664,16 @@ public class Database {
         }
     }
 
+    public Vector<Transaction> getWeekTransactionsByPatient(int ID, 
+            String date) throws SQLException {
+        return getWeekTransactions("PATIENT_ID", ID, date);
+    }
 
-        
-        
+    public Vector<Transaction> getWeekTransactionsByProvider(int ID,
+            String date) throws SQLException {
+        return getWeekTransactions("PROVIDER_ID", ID, date);
+    }
+
     private String toSQLDate(String outputDate) {
         SimpleDateFormat inputFormat = new SimpleDateFormat("MM-dd-yyyy");
         SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
