@@ -10,6 +10,8 @@ import java.text.ParseException;
 public class Database {
     Connection conn = null;
 
+    // Current ID numbers that will be assigned to the next entry that gets
+    // added.
     int patientNum;
     int transactionNum;
     int serviceNum;
@@ -469,7 +471,6 @@ public class Database {
 
         return false;
     }
-
 
     public void printAllPatients() throws SQLException {
         Statement stmt = null;
@@ -1202,6 +1203,9 @@ public class Database {
 
         Vector<Entity> returnVec = new Vector<Entity>();
 
+        // Because the function can build a vector of Patients or Providers, we
+        // need to have different conditional blocks for whether we grabbed from
+        // the Patient row or the Provider row.
         while(rs.next()) {
             try {
                 if(IDColumn.matches("PATIENT_ID")) {
@@ -1254,6 +1258,9 @@ public class Database {
         IDColumn = IDColumn.substring(0, IDColumn.length() - 1) +
             "_ID";
 
+        // Because the function can build a vector of Patients or Providers, we
+        // need to have different conditional blocks for whether we grabbed from
+        // the Patient row or the Provider row.
         while(rs.next()) {
             try {
                 if(IDColumn.matches("PATIENT_ID")) {
@@ -1290,6 +1297,9 @@ public class Database {
 
         return returnVec;
     }
+
+    // All of the database getter functions, which execute the private getter
+    // functions listed above with various tables, columns, and criteria.
 
     public Vector<Entity> getPatientByID(int ID) throws SQLException {
         return getEntityByID("Patients", ID);
@@ -1342,6 +1352,9 @@ public class Database {
         throws SQLException {
         return getEntityByString("Providers", "ZIPCODE", zipcode);
     }
+
+    // Since Services and Transactions are not Entity objects, we have to
+    // manually define them. Unfortunately.
 
     public Vector<Service> getServiceByID(int ID) throws SQLException {
         Statement stmt = conn.createStatement();
@@ -1427,6 +1440,9 @@ public class Database {
         return returnVec;
     }
 
+    // Since so many Transaction columns are ints, we can create a private
+    // function that specifies the column that it will search by.
+
     private Vector<Transaction> getTransactionByInt(String column, 
             int criteria) throws SQLException {
         PreparedStatement pStatement = conn.prepareStatement(
@@ -1461,6 +1477,7 @@ public class Database {
         return returnVec;
     }
 
+    // Same thing with DateTime and ServiceDate.
     private Vector<Transaction> getTransactionByString(String column, 
             String criteria) throws SQLException {
         PreparedStatement pStatement = conn.prepareStatement(
@@ -1505,6 +1522,8 @@ public class Database {
         return getTransactionByString("DATE_TIME", dateTime);
     }
 
+    // Note that the query transforms the specified date, which is in
+    // MM-DD-YYYY, into YYYY-MM-DD.
     public Vector<Transaction> getTransactionsByServiceDate(String serviceDate) 
         throws SQLException{
         System.out.println("ServiceDate: " + toSQLDate(serviceDate));
@@ -1526,6 +1545,9 @@ public class Database {
     public Vector<Transaction> getTransactionsByConsultID(int ID) throws SQLException{
         return getTransactionByInt("CONSULT_ID", ID);
     }
+
+    // Returns a full table of active patients or providers, meaning those with
+    // an ENROLLMENT column equal to 1.
 
     private Vector<Entity> getAllActiveEntities(String table) throws SQLException {
         String IDColumn = table.toUpperCase();
@@ -1611,6 +1633,8 @@ public class Database {
         return returnVec;
     }
 
+    // Gets all transactions by either PATIENT_ID or PROVIDER_ID within one week
+    // of the specified date.
     private Vector<Transaction> getWeekTransactions(String column,
             int ID, String date) throws SQLException {
         SimpleDateFormat inputFormat = new SimpleDateFormat("MM-dd-yyyy");
@@ -1620,6 +1644,7 @@ public class Database {
         try {
             Date currentDate = inputFormat.parse(date);
             Date pastDate = new Date();
+            // pastDate = 7 days before currentDate.
             pastDate.setTime(currentDate.getTime() - 
                     (long)7 * 1000 * 60 * 60 * 24);
 
@@ -1627,7 +1652,7 @@ public class Database {
             PreparedStatement pStatement = conn.prepareStatement(
                 "SELECT * FROM " + "Transactions" + " WHERE " + 
                 column + " = ? AND " +
-                "SERVICE_DATE > ? AND SERVICE_DATE <= ?"
+                "SERVICE_DATE >= ? AND SERVICE_DATE <= ?"
             );
 
             pStatement.setInt(1, ID);
@@ -1664,6 +1689,7 @@ public class Database {
         }
     }
 
+    // Calls the private function defined above with the specified column.
     public Vector<Transaction> getWeekTransactionsByPatient(int ID, 
             String date) throws SQLException {
         return getWeekTransactions("PATIENT_ID", ID, date);
@@ -1674,6 +1700,7 @@ public class Database {
         return getWeekTransactions("PROVIDER_ID", ID, date);
     }
 
+    // Converts MM-DD-YYYY to YYYY-MM-DD.
     private String toSQLDate(String outputDate) {
         SimpleDateFormat inputFormat = new SimpleDateFormat("MM-dd-yyyy");
         SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -1688,6 +1715,7 @@ public class Database {
         }
     }      
 
+    // Converts YYYY-MM-DD to MM-DD-YYYY.
     private String toOutputDate(String SQLDate) {
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat outputFormat = new SimpleDateFormat("MM-dd-yyyy");
