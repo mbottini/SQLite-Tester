@@ -3,6 +3,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Vector;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 public class Database {
     Connection conn = null;
@@ -983,7 +986,7 @@ public class Database {
 
             pStatement.setInt(1, transactionNum);
             pStatement.setString(2, newTransaction.getDateTime());
-            pStatement.setString(3, newTransaction.getServiceDate());
+            pStatement.setString(3, toSQLDate(newTransaction.getServiceDate()));
             pStatement.setInt(4, newTransaction.getProviderID());
             pStatement.setInt(5, newTransaction.getPatientID());
             pStatement.setInt(6, newTransaction.getServiceID());
@@ -1098,7 +1101,7 @@ public class Database {
             );
 
             pStatement.setString(1, updateTransaction.getDateTime());
-            pStatement.setString(2, updateTransaction.getServiceDate());
+            pStatement.setString(2, toSQLDate(updateTransaction.getServiceDate()));
             pStatement.setInt(3, updateTransaction.getProviderID());
             pStatement.setInt(4, updateTransaction.getPatientID());
             pStatement.setInt(5, updateTransaction.getServiceID());
@@ -1134,7 +1137,7 @@ public class Database {
                 currentTransaction = new Transaction(
                         rs.getInt("TRANSACTION_ID"),
                         rs.getString("DATE_TIME"),
-                        rs.getString("SERVICE_DATE"),
+                        toOutputDate(rs.getString("SERVICE_DATE")),
                         rs.getInt("PROVIDER_ID"),
                         rs.getInt("PATIENT_ID"),
                         rs.getInt("SERVICE_ID"),
@@ -1440,7 +1443,7 @@ public class Database {
                 returnVec.add( new Transaction(
                         rs.getInt("TRANSACTION_ID"),
                         rs.getString("DATE_TIME"),
-                        rs.getString("SERVICE_DATE"),
+                        toOutputDate(rs.getString("SERVICE_DATE")),
                         rs.getInt("PROVIDER_ID"),
                         rs.getInt("PATIENT_ID"),
                         rs.getInt("SERVICE_ID"),
@@ -1475,7 +1478,7 @@ public class Database {
                 returnVec.add( new Transaction(
                         rs.getInt("TRANSACTION_ID"),
                         rs.getString("DATE_TIME"),
-                        rs.getString("SERVICE_DATE"),
+                        toOutputDate(rs.getString("SERVICE_DATE")),
                         rs.getInt("PROVIDER_ID"),
                         rs.getInt("PATIENT_ID"),
                         rs.getInt("SERVICE_ID"),
@@ -1504,7 +1507,8 @@ public class Database {
 
     public Vector<Transaction> getTransactionsByServiceDate(String serviceDate) 
         throws SQLException{
-        return getTransactionByString("SERVICE_DATE", serviceDate);
+        System.out.println("ServiceDate: " + toSQLDate(serviceDate));
+        return getTransactionByString("SERVICE_DATE", toSQLDate(serviceDate));
     }
 
     public Vector<Transaction> getTransactionsByProviderID(int ID) throws SQLException{
@@ -1605,5 +1609,89 @@ public class Database {
         }
 
         return returnVec;
+    }
+
+    public Vector<Transaction> getWeekTransactionsPatient(int ID, 
+                                        String date) throws SQLException {
+        SimpleDateFormat inputFormat = new SimpleDateFormat("MM-dd-yyyy");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Vector<Transaction> returnVec = new Vector<Transaction>();
+
+        try {
+            Date currentDate = inputFormat.parse(date);
+            Date pastDate = new Date();
+            pastDate.setTime(currentDate.getTime() - 
+                    (long)7 * 1000 * 60 * 60 * 24);
+
+
+            PreparedStatement pStatement = conn.prepareStatement(
+                "SELECT * FROM " + "Transactions" + " WHERE " + 
+                "PATIENT_ID = ? AND " +
+                "SERVICE_DATE > ? AND SERVICE_DATE <= ?"
+            );
+
+            pStatement.setInt(1, ID);
+            pStatement.setString(2, outputFormat.format(pastDate));
+            pStatement.setString(3, outputFormat.format(currentDate));
+
+            ResultSet rs = pStatement.executeQuery();
+
+            while (rs.next()) {
+                try {
+                    returnVec.add( new Transaction(
+                        rs.getInt("TRANSACTION_ID"),
+                        rs.getString("DATE_TIME"),
+                        toOutputDate(rs.getString("SERVICE_DATE")),
+                        rs.getInt("PROVIDER_ID"),
+                        rs.getInt("PATIENT_ID"),
+                        rs.getInt("SERVICE_ID"),
+                        rs.getInt("CONSULT_ID"),
+                        rs.getString("COMMENT")
+                        )
+                    );
+                }
+
+                catch(InputException e) {
+                    System.out.println("Somehow, an invalid entry is in the DB.");
+                }
+            }
+
+            return returnVec;
+        }
+
+        catch(ParseException e) {
+            return returnVec;
+        }
+    }
+
+
+        
+        
+    private String toSQLDate(String outputDate) {
+        SimpleDateFormat inputFormat = new SimpleDateFormat("MM-dd-yyyy");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            Date tryDate = inputFormat.parse(outputDate);
+            return outputFormat.format(tryDate);
+        }
+
+        catch (ParseException e) {
+            return "";
+        }
+    }      
+
+    private String toOutputDate(String SQLDate) {
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("MM-dd-yyyy");
+
+        try {
+            Date tryDate = inputFormat.parse(SQLDate);
+            return outputFormat.format(tryDate);
+        }
+
+        catch(ParseException e) {
+            return "";
+        }
     }
 }

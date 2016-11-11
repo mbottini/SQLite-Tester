@@ -235,7 +235,7 @@ public class mainApp
                 System.out.println(t);
             } 
 
-            System.out.println("\nExecuting getTransmissionsByConsultID(0)...\n");
+            System.out.println("\nExecuting getTransactionsByConsultID(0)...\n");
 
             transactionVec = dBase.getTransactionsByConsultID(0);
 
@@ -249,6 +249,15 @@ public class mainApp
 
             for(Entity e : vec) {
                 System.out.println(e);
+            }
+
+            System.out.println("\nExecuting getWeekTransactionsPatient(1," +
+                    " \"01-29-1991\")...");
+
+            transactionVec = dBase.getWeekTransactionsPatient(1, "01-29-1991");
+
+            for(Transaction t : transactionVec) {
+                System.out.println(t);
             }
         }
         catch(SQLException e) {
